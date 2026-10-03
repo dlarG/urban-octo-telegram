@@ -1,31 +1,49 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+})->name('home');
 
 require __DIR__.'/auth.php';
+
+// Renter
+Route::middleware(['auth', 'active', 'role.renter'])
+    ->prefix('renter')->name('renter.')
+    ->group(function () {
+        Route::get('/dashboard', fn() => view('renter.dashboard'))->name('dashboard');
+        Route::get('/search',    fn() => view('renter.search'))->name('search');
+        Route::get('/favorites', fn() => view('renter.favorites'))->name('favorites');
+        Route::get('/applications', fn() => view('renter.applications'))->name('applications');
+        Route::get('/profile',   fn() => view('renter.profile'))->name('profile');
+        Route::get('/trust',     fn() => view('renter.trust'))->name('trust');
+        
+    });
+
+// Landlord
+Route::middleware(['auth', 'active', 'role.landlord'])->prefix('landlord')->name('landlord.')->group(function () {
+
+    // Always allowed
+    Route::get('/dashboard',    fn() => view('landlord.dashboard'))->name('dashboard');
+    Route::get('/profile',      fn() => view('landlord.profile'))->name('profile');
+    Route::get('/onboarding',   [\App\Http\Controllers\Landlord\OnboardingController::class, 'show'])->name('onboarding');
+    Route::post('/onboarding',  [\App\Http\Controllers\Landlord\OnboardingController::class, 'store'])->name('onboarding.store');
+
+    // Gated by onboarding
+    Route::middleware('landlord.onboarded')->group(function () {
+        Route::get('/properties',   fn() => view('landlord.properties'))->name('properties');
+        Route::get('/applications', fn() => view('landlord.applications'))->name('applications');
+    });
+});
+
+// Admin
+Route::middleware(['auth', 'active', 'role.admin'])
+    ->prefix('admin')->name('admin.')
+    ->group(function () {
+        Route::get('/dashboard',  fn() => view('admin.dashboard'))->name('dashboard');
+        Route::get('/landlords',  fn() => view('admin.landlords'))->name('landlords');
+        Route::get('/properties', fn() => view('admin.properties'))->name('properties');
+        Route::get('/renters',    fn() => view('admin.renters'))->name('renters');
+        Route::get('/disputes',   fn() => view('admin.disputes'))->name('disputes');
+    });

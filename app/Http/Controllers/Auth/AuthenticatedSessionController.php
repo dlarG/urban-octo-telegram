@@ -26,10 +26,23 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        $user = auth()->user();
+
+        // Reset lockout counters on successful login
+        $user->forceFill([
+            'failed_login_attempts' => 0,
+            'locked_until'          => null,
+            'last_login_at'         => now(),
+        ])->save();
+
+        // Role-based redirect
+        return match ($user->role) {
+            \App\Enums\UserRole::Admin    => redirect()->intended(route('admin.dashboard')),
+            \App\Enums\UserRole::Landlord => redirect()->intended(route('landlord.dashboard')),
+            \App\Enums\UserRole::Renter   => redirect()->intended(route('renter.dashboard')),
+        };
     }
 
     /**

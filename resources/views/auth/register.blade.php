@@ -1,52 +1,138 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+@extends('layouts.auth', ['title' => 'Sign up'])
+
+@section('content')
+    <h2 class="text-2xl font-semibold text-gray-900">Create your account</h2>
+    <p class="text-sm text-gray-500 mt-1">Join RentStreet in under a minute.</p>
+
+    @if ($errors->any())
+        <div class="mt-4 rounded-md bg-red-50 text-red-800 px-4 py-3 text-sm">
+            <ul class="space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('register') }}" class="mt-6 space-y-4"
+          x-data="{ role: '{{ old('role', 'renter') }}' }">
         @csrf
 
-        <!-- Name -->
+        {{-- Role selector --}}
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <label class="block text-sm font-medium text-gray-700 mb-2">I am a…</label>
+            <div class="grid grid-cols-2 gap-2">
+                <label class="cursor-pointer">
+                    <input type="radio" name="role" value="renter" x-model="role"
+                           class="peer sr-only">
+                    <div class="rounded-md border px-4 py-3 text-center text-sm font-medium
+                                peer-checked:border-indigo-600 peer-checked:bg-indigo-50
+                                peer-checked:text-indigo-700 hover:bg-gray-50">
+                        Renter
+                        <div class="text-xs text-gray-500 font-normal mt-0.5">Looking for a place</div>
+                    </div>
+                </label>
+
+                <label class="cursor-pointer">
+                    <input type="radio" name="role" value="landlord" x-model="role"
+                           class="peer sr-only">
+                    <div class="rounded-md border px-4 py-3 text-center text-sm font-medium
+                                peer-checked:border-indigo-600 peer-checked:bg-indigo-50
+                                peer-checked:text-indigo-700 hover:bg-gray-50">
+                        Landlord
+                        <div class="text-xs text-gray-500 font-normal mt-0.5">Listing a property</div>
+                    </div>
+                </label>
+            </div>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Full name</label>
+            <input id="name" name="name" type="text" required autofocus
+                   value="{{ old('name') }}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                          focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input id="email" name="email" type="email" required
+                       value="{{ old('email') }}"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                              focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <input id="phone" name="phone" type="text" required
+                       value="{{ old('phone') }}" placeholder="09xxxxxxxxx"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                              focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
         </div>
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        {{-- Renter-only field --}}
+        <div x-show="role === 'renter'" x-cloak>
+            <label for="renter_type" class="block text-sm font-medium text-gray-700">I'm a…</label>
+            <select id="renter_type" name="renter_type"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                           focus:border-indigo-500 focus:ring-indigo-500">
+                <option value="student" @selected(old('renter_type') === 'student')>Student</option>
+                <option value="worker"  @selected(old('renter_type') === 'worker')>Worker</option>
+                <option value="tourist" @selected(old('renter_type') === 'tourist')>Tourist</option>
+                <option value="other"   @selected(old('renter_type') === 'other')>Other</option>
+            </select>
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
+        {{-- Landlord hint --}}
+        <div x-show="role === 'landlord'" x-cloak
+             class="rounded-md bg-indigo-50 text-indigo-800 px-4 py-3 text-sm">
+            Next step: upload your valid ID and business permit. An admin will verify your account.
         </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input id="password" name="password" type="password" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                              focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium text-gray-700">
+                    Confirm password
+                </label>
+                <input id="password_confirmation" name="password_confirmation" type="password" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                              focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+        </div>
+
+        <label class="inline-flex items-start">
+            <input type="checkbox" name="terms" value="1" required
+                   class="mt-0.5 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+            <span class="ml-2 text-sm text-gray-600">
+                I agree to the
+                <a href="#" class="text-indigo-600 hover:underline">Terms of Service</a>
+                and
+                <a href="#" class="text-indigo-600 hover:underline">Privacy Policy</a>.
+            </span>
+        </label>
+
+        <button type="submit"
+                class="w-full inline-flex justify-center rounded-md bg-indigo-600
+                       px-4 py-2.5 text-sm font-medium text-white shadow-sm
+                       hover:bg-indigo-700 focus:outline-none focus:ring-2
+                       focus:ring-indigo-500 focus:ring-offset-2">
+            Create account
+        </button>
     </form>
-</x-guest-layout>
+
+    <p class="mt-6 text-sm text-gray-600 text-center">
+        Already have an account?
+        <a href="{{ route('login') }}" class="text-indigo-600 font-medium hover:underline">
+            Log in
+        </a>
+    </p>
+@endsection
