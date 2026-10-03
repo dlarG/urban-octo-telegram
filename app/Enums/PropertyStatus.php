@@ -5,4 +5,13 @@ enum PropertyStatus: string {
     case Active        = 'active';
     case Inactive      = 'inactive';
     case Suspended     = 'suspended';
+
+    public function label(): string {
+        return match($this) {
+            self::PendingReview => 'Pending Review',
+            self::Active        => 'Active',
+            self::Inactive      => 'Inactive',
+            self::Suspended     => 'Suspended',
+        };
+    }
 }
