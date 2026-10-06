@@ -39,9 +39,9 @@ class AuthenticatedSessionController extends Controller
 
         // Role-based redirect
         return match ($user->role) {
-            \App\Enums\UserRole::Admin    => redirect()->intended(route('admin.dashboard')),
-            \App\Enums\UserRole::Landlord => redirect()->intended(route('landlord.dashboard')),
-            \App\Enums\UserRole::Renter   => redirect()->intended(route('renter.dashboard')),
+            \App\Enums\UserRole::Admin    => redirect()->route('admin.dashboard'),
+            \App\Enums\UserRole::Landlord => redirect()->route('landlord.dashboard'),
+            \App\Enums\UserRole::Renter   => redirect()->route('renter.dashboard'),
         };
     }
 
@@ -51,11 +51,9 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

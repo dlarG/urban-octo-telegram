@@ -22,20 +22,24 @@ Route::middleware(['auth', 'active', 'role.renter'])
     });
 
 // Landlord
-Route::middleware(['auth', 'active', 'role.landlord'])->prefix('landlord')->name('landlord.')->group(function () {
+Route::middleware(['auth', 'active', 'role.landlord'])
+    ->prefix('landlord')->name('landlord.')
+    ->group(function () {
 
-    // Always allowed
-    Route::get('/dashboard',    fn() => view('landlord.dashboard'))->name('dashboard');
-    Route::get('/profile',      fn() => view('landlord.profile'))->name('profile');
-    Route::get('/onboarding',   [\App\Http\Controllers\Landlord\OnboardingController::class, 'show'])->name('onboarding');
-    Route::post('/onboarding',  [\App\Http\Controllers\Landlord\OnboardingController::class, 'store'])->name('onboarding.store');
+        // Always allowed
+        Route::get('/dashboard',    fn() => view('landlord.dashboard'))->name('dashboard');
+        Route::get('/profile',      fn() => view('landlord.profile'))->name('profile');
+        Route::get('/onboarding',   [\App\Http\Controllers\Landlord\OnboardingController::class, 'show'])->name('onboarding');
+        Route::post('/onboarding',  [\App\Http\Controllers\Landlord\OnboardingController::class, 'store'])->name('onboarding.store');
 
-    // Gated by onboarding
-    Route::middleware('landlord.onboarded')->group(function () {
-        Route::get('/properties',   fn() => view('landlord.properties'))->name('properties');
-        Route::get('/applications', fn() => view('landlord.applications'))->name('applications');
+        // Gated by onboarding
+        Route::middleware('landlord.onboarded')->group(function () {
+            Route::get('/applications', fn() => view('landlord.applications'))->name('applications');
+
+            Route::resource('properties', \App\Http\Controllers\Landlord\BoardingHouseController::class)
+                ->parameters(['properties' => 'boarding_house']);
+        });
     });
-});
 
 // Admin
 Route::middleware(['auth', 'active', 'role.admin'])

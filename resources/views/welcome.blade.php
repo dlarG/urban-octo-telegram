@@ -171,7 +171,7 @@
 
 {{-- ============================== HERO ============================== --}}
 <section class="relative">
-    <div class="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-10 pt-10 sm:px-8 sm:pt-14 lg:grid-cols-12 lg:gap-14 lg:pb-28 lg:pt-20">
+    <div class="mx-auto grid max-w-7xl items-center gap-10 px-2 pb-10 pt-10 sm:px-8 sm:pt-14 lg:grid-cols-12 lg:gap-14 lg:pb-28 lg:pt-10">
         <div class="lg:col-span-6">
 
             <h1 class="font-display mt-5 text-[2.5rem] font-bold leading-[1.05] text-bay sm:text-6xl lg:text-[4.25rem]">

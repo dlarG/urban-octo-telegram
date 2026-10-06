@@ -4,7 +4,7 @@
     <x-side-link :href="route('landlord.dashboard')" :active="request()->routeIs('landlord.dashboard')">
         Dashboard
     </x-side-link>
-    <x-side-link :href="route('landlord.properties')" :active="request()->routeIs('landlord.properties')">
+    <x-side-link :href="route('landlord.properties.index')" :active="request()->routeIs('landlord.properties.*')">
         My properties
     </x-side-link>
     <x-side-link :href="route('landlord.applications')" :active="request()->routeIs('landlord.applications')">

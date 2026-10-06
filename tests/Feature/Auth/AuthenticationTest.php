@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,17 +17,37 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_users_can_authenticate_using_the_login_screen(): void
+    public function test_renter_lands_on_renter_dashboard(): void
     {
-        $user = User::factory()->create();
+        $renter = User::factory()->renter()->create();
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'email' => $renter->email,
             'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        $response->assertRedirect(route('renter.dashboard'));
+    }
+
+    public function test_admin_lands_on_admin_dashboard(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->post('/login', [
+            'email' => $admin->email,
+            'password' => 'password',
+        ])->assertRedirect(route('admin.dashboard'));
+    }
+
+    public function test_landlord_lands_on_landlord_dashboard(): void
+    {
+        $landlord = User::factory()->landlord()->create();
+
+        $this->post('/login', [
+            'email' => $landlord->email,
+            'password' => 'password',
+        ])->assertRedirect(route('landlord.dashboard'));
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
@@ -50,6 +69,6 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect('login');
     }
 }
