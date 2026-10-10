@@ -14,6 +14,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         \App\Models\BoardingHouse::class => \App\Policies\BoardingHousePolicy::class,
+        \App\Models\Room::class          => \App\Policies\RoomPolicy::class,
     ];
 
     /**

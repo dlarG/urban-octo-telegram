@@ -48,7 +48,7 @@ class BoardingHouseController extends Controller
     {
         $this->authorize('view', $boarding_house);
 
-        $boarding_house->load(['amenities', 'rooms', 'propertyImages']);
+        $boarding_house->load(['amenities', 'rooms.propertyImages', 'propertyImages']);
 
         return view('landlord.properties.show', ['house' => $boarding_house]);
     }

@@ -22,9 +22,11 @@ class BoardingHousePolicy
     public function create(User $user): bool
     {
         if (! $user->isLandlord()) return false;
+
         $profile = $user->landlordProfile;
+
         return $profile
-            && $profile->onboarding_completed_at
+            && $profile->hasSubmittedDocuments() 
             && $profile->approval_status === LandlordApprovalStatus::Accepted;
     }
 

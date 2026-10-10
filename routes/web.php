@@ -28,16 +28,38 @@ Route::middleware(['auth', 'active', 'role.landlord'])
 
         // Always allowed
         Route::get('/dashboard',    fn() => view('landlord.dashboard'))->name('dashboard');
-        Route::get('/profile',      fn() => view('landlord.profile'))->name('profile');
-        Route::get('/onboarding',   [\App\Http\Controllers\Landlord\OnboardingController::class, 'show'])->name('onboarding');
-        Route::post('/onboarding',  [\App\Http\Controllers\Landlord\OnboardingController::class, 'store'])->name('onboarding.store');
+        Route::get('/profile',   [\App\Http\Controllers\Landlord\ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile',   [\App\Http\Controllers\Landlord\ProfileController::class, 'update'])->name('profile.update');
 
         // Gated by onboarding
         Route::middleware('landlord.onboarded')->group(function () {
             Route::get('/applications', fn() => view('landlord.applications'))->name('applications');
 
+            // Properties
             Route::resource('properties', \App\Http\Controllers\Landlord\BoardingHouseController::class)
                 ->parameters(['properties' => 'boarding_house']);
+
+            // Rooms (nested under a property)
+            Route::resource('properties/{boarding_house}/rooms', \App\Http\Controllers\Landlord\RoomController::class)
+                ->parameters(['rooms' => 'room'])
+                ->names('properties.rooms');
+
+            // Images (attached to house or room)
+            Route::post('properties/{boarding_house}/images',
+                [\App\Http\Controllers\Landlord\PropertyImageController::class, 'storeForHouse'])
+                ->name('properties.images.store');
+
+            Route::post('properties/{boarding_house}/rooms/{room}/images',
+                [\App\Http\Controllers\Landlord\PropertyImageController::class, 'storeForRoom'])
+                ->name('properties.rooms.images.store');
+
+            Route::delete('images/{image}',
+                [\App\Http\Controllers\Landlord\PropertyImageController::class, 'destroy'])
+                ->name('images.destroy');
+
+            Route::patch('images/{image}/primary',
+                [\App\Http\Controllers\Landlord\PropertyImageController::class, 'makePrimary'])
+                ->name('images.primary');
         });
     });
 

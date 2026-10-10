@@ -17,14 +17,14 @@ class EnsureLandlordOnboarded
 
         $profile = $user->landlordProfile;
 
-        // Allow onboarding route itself, else infinite redirect
-        if ($request->routeIs('landlord.onboarding') || $request->routeIs('landlord.onboarding.store')) {
+        // Allow the profile page (for resubmission after rejection)
+        if ($request->routeIs('landlord.profile') || $request->routeIs('landlord.profile.update')) {
             return $next($request);
         }
 
-        if (! $profile || ! $profile->isOnboardingComplete()) {
-            return redirect()->route('landlord.onboarding')
-                ->with('status', 'Please complete your landlord profile before continuing.');
+        if (! $profile || ! $profile->hasSubmittedDocuments()) {
+            return redirect()->route('landlord.profile')
+                ->with('status', 'Please submit your documents before continuing.');
         }
 
         return $next($request);

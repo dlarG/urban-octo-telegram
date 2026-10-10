@@ -20,9 +20,19 @@
     @endif
 
     @php $profile = auth()->user()->landlordProfile; @endphp
-    @if ($profile && $profile->onboarding_completed_at && $profile->approval_status === \App\Enums\LandlordApprovalStatus::Pending)
+
+    @if ($profile && ! $profile->hasSubmittedDocuments())
+        <div class="mt-4 rounded-md bg-yellow-50 text-yellow-800 px-4 py-3 text-sm">
+            <strong>Action needed:</strong> Complete your profile and upload your documents.
+            <a href="{{ route('landlord.profile') }}" class="underline font-medium">Go to profile →</a>
+        </div>
+    @elseif ($profile && $profile->hasSubmittedDocuments() && $profile->approval_status === \App\Enums\LandlordApprovalStatus::Pending)
         <div class="mt-4 rounded-md bg-blue-50 text-blue-800 px-4 py-3 text-sm">
             Your account is still under review. You'll be able to add properties once approved.
+        </div>
+    @elseif ($profile && $profile->approval_status === \App\Enums\LandlordApprovalStatus::Rejected)
+        <div class="mt-4 rounded-md bg-red-50 text-red-800 px-4 py-3 text-sm">
+            Your documents were rejected. Contact support to re-upload.
         </div>
     @endif
 

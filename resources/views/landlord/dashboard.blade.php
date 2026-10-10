@@ -5,19 +5,19 @@
 
     @php $profile = auth()->user()->landlordProfile; @endphp
 
-    @if (! $profile?->onboarding_completed_at)
+    @if (! $profile?->hasSubmittedDocuments())
         <div class="mt-4 rounded-md bg-yellow-50 text-yellow-800 px-4 py-3 text-sm">
-            <strong>Action needed:</strong> Complete your landlord profile to start listing properties.
-            <a href="{{ route('landlord.onboarding') }}" class="underline font-medium">Finish onboarding →</a>
+            <strong>Action needed:</strong> Submit your valid ID and business permit to start listing properties.
+            <a href="{{ route('landlord.profile') }}" class="underline font-medium">Complete profile →</a>
         </div>
     @elseif ($profile->approval_status === \App\Enums\LandlordApprovalStatus::Pending)
         <div class="mt-4 rounded-md bg-blue-50 text-blue-800 px-4 py-3 text-sm">
-            Your documents are under review. We'll notify you once verified.
+            Documents under review.
         </div>
     @elseif ($profile->approval_status === \App\Enums\LandlordApprovalStatus::Rejected)
         <div class="mt-4 rounded-md bg-red-50 text-red-800 px-4 py-3 text-sm">
-            Your submission was rejected.
-            <a href="{{ route('landlord.onboarding') }}" class="underline font-medium">Resubmit →</a>
+            Rejected: {{ $profile->rejection_reason }}
+            <a href="{{ route('landlord.profile') }}" class="underline font-medium">Resubmit →</a>
         </div>
     @endif
 

@@ -6,6 +6,8 @@ use App\Enums\PropertyStatus;
 use App\Models\BoardingHouse;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class BoardingHouseTest extends TestCase
@@ -17,7 +19,7 @@ class BoardingHouseTest extends TestCase
         $u = User::factory()->landlord()->create();
         $u->landlordProfile()->create([
             'approval_status'         => LandlordApprovalStatus::Accepted,
-            'onboarding_completed_at' => now(),
+            'documents_submitted_at' => now(),
             'business_name'           => 'Test Co.',
             'valid_id_path'           => 'x.jpg',
             'business_permit_path'    => 'y.jpg',
@@ -25,12 +27,39 @@ class BoardingHouseTest extends TestCase
         return $u;
     }
 
+    public function test_landlord_registration_stores_documents(): void
+    {
+        Storage::fake('local');
+
+        $this->post('/register', [
+            'name'                 => 'Doc Landlord',
+            'email'                => 'doc@example.test',
+            'phone'                => '09171234599',
+            'password'             => 'password',
+            'password_confirmation' => 'password',
+            'role'                 => 'landlord',
+            'business_name'        => 'Doc Test Co.',
+            'gcash_number'         => '09171234599',
+            'valid_id'             => UploadedFile::fake()->image('id.jpg'),
+            'business_permit'      => UploadedFile::fake()->image('permit.jpg'),
+            'terms'                => '1',
+        ])->assertRedirect(route('landlord.dashboard'));
+
+        $profile = User::where('email', 'doc@example.test')->first()->landlordProfile;
+
+        $this->assertNotNull($profile->valid_id_path);
+        $this->assertNotNull($profile->business_permit_path);
+        $this->assertNotNull($profile->documents_submitted_at);
+        Storage::disk('local')->assertExists($profile->valid_id_path);
+        Storage::disk('local')->assertExists($profile->business_permit_path);
+    }
+
     public function test_landlord_with_pending_approval_cannot_create_property(): void
     {
         $u = User::factory()->landlord()->create();
         $u->landlordProfile()->create([
             'approval_status'         => LandlordApprovalStatus::Pending,
-            'onboarding_completed_at' => now(),
+            'documents_submitted_at' => now(),
             'business_name'           => 'Pending Co.',
             'valid_id_path'           => 'x.jpg',
             'business_permit_path'    => 'y.jpg',

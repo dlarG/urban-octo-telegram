@@ -14,7 +14,7 @@ class LandlordProfile extends Model
         'user_id', 'business_name', 'gcash_number', 'maya_number',
         'valid_id_path', 'business_permit_path',
         'approval_status', 'rejection_reason',
-        'accepted_at', 'rejected_at', 'onboarding_completed_at',
+        'accepted_at', 'rejected_at', 'documents_submitted_at',
         'validated_by',
     ];
 
@@ -22,17 +22,19 @@ class LandlordProfile extends Model
         'approval_status'         => LandlordApprovalStatus::class,
         'accepted_at'             => 'datetime',
         'rejected_at'             => 'datetime',
-        'onboarding_completed_at' => 'datetime',
+        'documents_submitted_at' => 'datetime',
     ];
 
-    public function isOnboardingComplete(): bool
+    public function hasSubmittedDocuments(): bool
     {
-        return ! is_null($this->onboarding_completed_at);
+        return ! is_null($this->documents_submitted_at)
+            && $this->valid_id_path
+            && $this->business_permit_path;
     }
 
     public function canListProperties(): bool
     {
-        return $this->isOnboardingComplete()
+        return $this->hasSubmittedDocuments()
             && $this->approval_status === LandlordApprovalStatus::Accepted;
     }
 

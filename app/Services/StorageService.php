@@ -11,11 +11,11 @@ class StorageService
      * Store an uploaded file under a category subfolder.
      * Returns the disk-relative path (e.g. "landlord-ids/abc123.jpg").
      */
-    public function put(UploadedFile $file, string $category): string
+    public function put(UploadedFile $file, string $category, ?string $disk = null): string
     {
         $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
 
-        return $file->storeAs($category, $filename, $this->disk());
+        return $file->storeAs($category, $filename, $disk ?? $this->disk());
     }
 
     public function delete(?string $path): void
@@ -25,9 +25,17 @@ class StorageService
         }
     }
 
-    public function url(?string $path): ?string
+    public function url(?string $path, ?string $disk = null): ?string
     {
-        return $path ? Storage::disk($this->disk())->url($path) : null;
+        if (! $path) return null;
+        $disk = $disk ?? $this->disk();
+
+        // Private files are served through a route, not Storage::url()
+        if ($disk === 'local') {
+            return route('admin.documents.show', ['path' => $path]);
+        }
+
+        return Storage::disk($disk)->url($path);
     }
 
     /**
@@ -35,6 +43,15 @@ class StorageService
      */
     protected function disk(): string
     {
-        return config('filesystems.default', 'public');
+        $disk = config('filesystems.default', 'public');
+
+        if ($disk === 'local') {
+            throw new \RuntimeException(
+                'StorageService is using the "local" (private) disk. '.
+                'Set FILESYSTEM_DISK=public in .env, or switch to S3/R2.'
+            );
+        }
+
+        return $disk;
     }
 }
