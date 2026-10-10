@@ -10,6 +10,9 @@
     <x-side-link :href="route('landlord.applications')" :active="request()->routeIs('landlord.applications')" icon="inbox">
         Applications
     </x-side-link>
+    <x-side-link :href="route('landlord.tenancies.index')" :active="request()->routeIs('landlord.tenancies.*')" icon="handshake">
+        Tenancies
+    </x-side-link>
     <x-side-link :href="route('landlord.profile')" :active="request()->routeIs('landlord.profile')" icon="user-circle">
         Profile
     </x-side-link>

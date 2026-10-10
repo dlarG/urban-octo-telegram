@@ -9,6 +9,8 @@ class TrustScoreAccessLog extends Model
 {
     use HasFactory;
 
+    protected $table = 'trust_score_access_log';
+
     protected $fillable = [
         'viewer_id', 'subject_id', 'rental_application_id', 'ip_address', 'viewed_at',
     ];

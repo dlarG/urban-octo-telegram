@@ -65,6 +65,31 @@ Route::middleware(['auth', 'active', 'role.landlord'])
             Route::patch('images/{image}/primary',
                 [\App\Http\Controllers\Landlord\PropertyImageController::class, 'makePrimary'])
                 ->name('images.primary');
+
+            //Applications
+            Route::get('/applications',
+                [\App\Http\Controllers\Landlord\ApplicationController::class, 'index'])
+                ->name('applications');
+            Route::get('/applications/{application}',
+                [\App\Http\Controllers\Landlord\ApplicationController::class, 'show'])
+                ->name('applications.show');
+            Route::post('/applications/{application}/accept',
+                [\App\Http\Controllers\Landlord\ApplicationController::class, 'accept'])
+                ->name('applications.accept');
+            Route::post('/applications/{application}/reject',
+                [\App\Http\Controllers\Landlord\ApplicationController::class, 'reject'])
+                ->name('applications.reject');
+
+            // Tenancies
+            Route::get('/tenancies',
+                [\App\Http\Controllers\Landlord\TenancyController::class, 'index'])
+                ->name('tenancies.index');
+            Route::get('/tenancies/{tenancy}',
+                [\App\Http\Controllers\Landlord\TenancyController::class, 'show'])
+                ->name('tenancies.show');
+            Route::post('/tenancies/{tenancy}/end',
+                [\App\Http\Controllers\Landlord\TenancyController::class, 'end'])
+                ->name('tenancies.end');
         });
     });
 
