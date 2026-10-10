@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PublicPropertyController;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+Route::get('/properties', [PublicPropertyController::class, 'index'])->name('properties.index');
+Route::get('/properties/{boarding_house}', [PublicPropertyController::class, 'show'])->name('properties.show');
 
 require __DIR__.'/auth.php';
 
@@ -15,10 +18,12 @@ Route::middleware(['auth', 'active', 'role.renter'])
         Route::get('/dashboard', fn() => view('renter.dashboard'))->name('dashboard');
         Route::get('/search',    fn() => view('renter.search'))->name('search');
         Route::get('/favorites', fn() => view('renter.favorites'))->name('favorites');
-        Route::get('/applications', fn() => view('renter.applications'))->name('applications');
         Route::get('/profile',   fn() => view('renter.profile'))->name('profile');
         Route::get('/trust',     fn() => view('renter.trust'))->name('trust');
         
+        Route::get('/applications', [\App\Http\Controllers\Renter\ApplicationController::class, 'index'])->name('applications');
+        Route::post('/rooms/{room}/apply', [\App\Http\Controllers\Renter\ApplicationController::class, 'store'])->name('applications.store');
+        Route::delete('/applications/{application}', [\App\Http\Controllers\Renter\ApplicationController::class, 'withdraw'])->name('applications.withdraw');
     });
 
 // Landlord
