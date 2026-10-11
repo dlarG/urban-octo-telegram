@@ -38,13 +38,20 @@
 
 {{-- Navbar: quick links --}}
 @section('topbar_actions')
-    <a href="{{ route('renter.search') }}" class="grid h-10 w-10 place-items-center rounded-full text-bay hover:bg-mist md:hidden" aria-label="Find a place">
+    <a href="{{ route('renter.search') }}"
+       class="grid h-10 w-10 place-items-center rounded-full text-bay hover:bg-mist md:hidden"
+       aria-label="Find a place">
         <svg viewBox="0 0 24 24" class="ico"><use href="#l-search"/></svg>
     </a>
-    <a href="{{ route('renter.favorites') }}" class="grid h-10 w-10 place-items-center rounded-full text-bay hover:bg-mist" aria-label="Favorites">
+    <a href="{{ route('renter.favorites') }}"
+       class="grid h-10 w-10 place-items-center rounded-full hover:bg-mist {{ request()->routeIs('renter.favorites') ? 'bg-mist text-sea' : 'text-bay' }}"
+       aria-label="Favorites">
         <svg viewBox="0 0 24 24" class="ico"><use href="#l-heart"/></svg>
     </a>
 @endsection
+
+@section('sidebar_label', 'Renter')
+
 
 @section('user_menu')
     <a href="{{ route('renter.profile') }}" role="menuitem" class="menu-item">

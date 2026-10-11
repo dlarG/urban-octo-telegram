@@ -24,25 +24,27 @@
     <div class="mx-auto max-w-7xl">
 
         {{-- ================= Header ================= --}}
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="font-display text-2xl font-bold text-bay sm:text-3xl">Favorites</h1>
-                <p class="mt-1 text-sm text-muted">Boarding houses you saved to compare.</p>
-            </div>
-            @if (! $favorites->isEmpty())
-                <a href="{{ route('renter.search') }}" class="btn btn-secondary text-sm self-start sm:self-auto">
-                    <svg viewBox="0 0 24 24" class="ico" style="width:1rem;height:1rem"><use href="#l-search"/></svg>
-                    Find more places
-                </a>
-            @endif
-        </div>
+        <section class="relative isolate overflow-hidden rounded-3xl bg-bay text-white">
+            <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=70"
+                alt="" class="absolute inset-0 -z-10 h-full w-full object-cover" onerror="this.style.visibility='hidden'">
+            <div class="absolute inset-0 -z-10 bg-gradient-to-r from-[#0B3C49] via-[#0B3C49]/85 to-[#0B3C49]/40"></div>
 
-        @if (session('status'))
-            <div class="mt-5 flex items-start gap-3 rounded-xl border border-[#CDE8E5] bg-[#E6F4F2] px-4 py-3 text-[13px] text-bay" role="status">
-                <svg viewBox="0 0 24 24" class="ico mt-0.5 text-sea" style="width:1rem;height:1rem"><use href="#l-check-circle"/></svg>
-                <p class="font-medium">{{ session('status') }}</p>
+            <div class="flex flex-col gap-5 px-6 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-10">
+                <div class="max-w-xl">
+                    <h1 class="font-display text-2xl font-bold sm:text-3xl">Favorites</h1>
+                    <p class="mt-3 text-base leading-relaxed text-white/85">
+                        Boarding houses you saved for later. You can remove a place from your favorites by tapping the heart icon on its card.
+                    </p>
+                </div>
+
+                @if (! $favorites->isEmpty())
+                    <a href="{{ route('renter.search') }}" class="btn btn-lantern self-start sm:self-auto">
+                        <svg viewBox="0 0 24 24" class="ico"><use href="#l-search"/></svg>
+                        Find more places
+                    </a>
+                @endif
             </div>
-        @endif
+        </section>
 
         {{-- ================= Content ================= --}}
         <div class="mt-8">

@@ -134,14 +134,24 @@
                 </button>
             </div>
 
-            <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-5" aria-label="Main">
-                @yield('sidebar')
+            <nav class="flex-1 overflow-y-auto px-3 py-5" aria-label="Main">
+                <p class="px-3 pb-2 text-[10px] font-semibold uppercase tracking-wider text-white/50">
+                    @yield('sidebar_label', 'Menu')
+                </p>
+                <div class="space-y-1">
+                    @yield('sidebar')
+                </div>
             </nav>
 
-            <div class="flex-none border-t border-white/10 p-3">
+            <div class="flex-none space-y-3 border-t border-white/10 p-3">
+                @hasSection('sidebar_footer')
+                    @yield('sidebar_footer')
+                @endif
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" role="menuitem" class="menu-item text-red">
+                    <button type="submit"
+                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white">
                         <svg viewBox="0 0 24 24" class="ico"><use href="#l-logout"/></svg>
                         Log out
                     </button>
@@ -170,7 +180,7 @@
                     {{-- Right slot: quick actions supplied by the role layout --}}
                     <div class="flex flex-none items-center gap-1.5 sm:gap-2">
                         
-
+                        @yield('topbar_actions')
                         {{-- User menu --}}
                         <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @click.outside="open = false">
                             <button type="button" @click="open = !open"
