@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
 
     public function store(Request $request, TrustScoreService $trust): RedirectResponse
     {
-        // "0912 345 6789" / "0912-345-6789" -> "09123456789"
+        // Normalize phone-like fields
         foreach (['gcash_number', 'maya_number'] as $key) {
             if ($request->filled($key)) {
                 $request->merge([$key => preg_replace('/[\s-]+/', '', $request->input($key))]);
@@ -62,12 +62,15 @@ class RegisteredUserController extends Controller
                 'nullable', $mobile,
             ],
             'maya_number'   => ['nullable', $mobile],
-            'valid_id'        => [Rule::requiredIf($isLandlord), 'nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+
+            // 👇 Required for BOTH roles now
+            'valid_id'        => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
             'business_permit' => [Rule::requiredIf($isLandlord), 'nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ], [
             'gcash_number.required' => 'Add a GCash or Maya number.',
             'gcash_number.regex'    => 'Use a mobile number like 09xxxxxxxxx.',
             'maya_number.regex'     => 'Use a mobile number like 09xxxxxxxxx.',
+            'valid_id.required'     => 'Please upload your valid ID.',
         ]);
 
         $storedFiles = [];
@@ -81,19 +84,25 @@ class RegisteredUserController extends Controller
                     'password'        => Hash::make($data['password']),
                     'role'            => UserRole::from($data['role']),
                     'is_active'       => true,
-                    'registration_ip' => $request->ip(), // review signal only, never auto-block
+                    'registration_ip' => $request->ip(),
                 ]);
 
+                // Hash the ID once, regardless of role
+                $hash = hash_file('sha256', $request->file('valid_id')->getRealPath());
+
+                // Dedupe: if this exact file already exists on another account, reject
+                $collision = RenterProfile::where('valid_id_hash', $hash)->exists();
+                if ($collision) {
+                    throw new \DomainException('This ID is already registered on another account. Contact support if this is a mistake.');
+                }
+
                 if ($isLandlord) {
-                    $validId = $request->file('valid_id')
-                        ->store('landlords/valid-ids', self::DOCUMENT_DISK);
+                    $validId = $request->file('valid_id')->store('landlords/valid-ids', self::DOCUMENT_DISK);
                     $storedFiles[] = $validId;
 
-                    $permit = $request->file('business_permit')
-                        ->store('landlords/business-permits', self::DOCUMENT_DISK);
+                    $permit = $request->file('business_permit')->store('landlords/business-permits', self::DOCUMENT_DISK);
                     $storedFiles[] = $permit;
 
-                    // NOTE: adjust these column names to match your landlord_profiles migration.
                     LandlordProfile::create([
                         'user_id'                => $user->id,
                         'business_name'          => $data['business_name'],
@@ -105,19 +114,28 @@ class RegisteredUserController extends Controller
                         'documents_submitted_at' => now(),
                     ]);
                 } else {
+                    $validId = $request->file('valid_id')->store('renters/valid-ids', self::DOCUMENT_DISK);
+                    $storedFiles[] = $validId;
+
                     RenterProfile::create([
-                        'user_id'     => $user->id,
-                        'renter_type' => RenterType::from($data['renter_type']),
+                        'user_id'               => $user->id,
+                        'renter_type'           => RenterType::from($data['renter_type']),
+                        'valid_id_path'         => $validId,
+                        'valid_id_hash'         => $hash,
+                        'valid_id_submitted_at' => now(),
                     ]);
                 }
 
-                // INVARIANT: trust score row exists the instant the user does.
                 $trust->initializeFor($user);
 
                 return $user;
             });
+        } catch (\DomainException $e) {
+            Storage::disk(self::DOCUMENT_DISK)->delete($storedFiles);
+            return back()
+                ->withInput()
+                ->withErrors(['valid_id' => $e->getMessage()]);
         } catch (\Throwable $e) {
-            // Don't leave orphaned ID documents on disk if the transaction failed
             Storage::disk(self::DOCUMENT_DISK)->delete($storedFiles);
             throw $e;
         }
@@ -125,8 +143,6 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        // Landlord documents are now collected at registration, so point this at your
-        // "awaiting approval" screen rather than a document-upload onboarding step.
         return match ($user->role) {
             UserRole::Landlord => redirect()->route('landlord.dashboard'),
             UserRole::Renter   => redirect()->route('renter.dashboard'),

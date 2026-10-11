@@ -103,7 +103,38 @@
                 </div>
             </div>
         </section>
+        {{-- ============ STEP: verify (renter only) ============ --}}
+        <section data-step="verify" class="hidden">
+            <h1 tabindex="-1" class="font-display text-3xl font-bold text-bay outline-none sm:text-4xl">Verify your identity</h1>
+            <p class="mt-2 text-base text-muted">
+                Upload a valid government-issued ID. It stays private — landlords only know you're verified, never see the document.
+            </p>
 
+            <div class="mt-8 space-y-5">
+                <div data-field="valid_id">
+                    <label for="valid_id" class="block text-sm font-medium text-bay">Valid ID</label>
+                    <div class="relative mt-1.5">
+                        <input id="valid_id" name="valid_id" type="file"
+                            accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                            class="peer sr-only">
+                        <label for="valid_id" data-dz
+                            class="flex cursor-pointer items-center gap-4 rounded-xl border border-dashed border-[#9BB5B3] bg-white p-4 transition-colors hover:bg-mist peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#177E89]">
+                            <span class="grid h-11 w-11 flex-none place-items-center rounded-lg bg-mist text-sea">
+                                <svg viewBox="0 0 24 24" class="ico"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+                            </span>
+                            <span class="min-w-0">
+                                <span data-file-name data-default="Choose a file" class="block truncate font-medium text-bay">Choose a file</span>
+                                <span class="block text-sm text-muted">National ID, driver's license, passport, student ID. JPG, PNG or PDF, up to 5 MB.</span>
+                            </span>
+                        </label>
+                    </div>
+                    <p class="mt-2 flex items-start gap-1.5 text-xs text-muted">
+                        <svg viewBox="0 0 24 24" class="ico" style="width:.9rem;height:.9rem"><use href="#i-lock"/></svg>
+                        <span>Your ID is used for verification only and is never shown publicly or to landlords.</span>
+                    </p>
+                </div>
+            </div>
+        </section>
         {{-- ============ STEP: renter type (renter only) ============ --}}
         <section data-step="type" class="hidden">
             <h1 tabindex="-1" class="font-display text-3xl font-bold text-bay outline-none sm:text-4xl">What kind of renter are you?</h1>
@@ -284,13 +315,14 @@
         var progressBar = document.getElementById('progressBar');
 
         var FLOWS = {
-            renter:   ['role', 'type', 'account'],
+            renter:   ['role', 'type', 'verify', 'account'],
             landlord: ['role', 'business', 'documents', 'account']
         };
         var STEP_OF = {
             role: 'role', renter_type: 'type',
             business_name: 'business', gcash_number: 'business', maya_number: 'business',
-            valid_id: 'documents', business_permit: 'documents'
+            business_permit: 'documents'
+            // valid_id is resolved below per-role
         };
         var MAX_BYTES = 5 * 1024 * 1024;
         var PH_NUMBER = /^(09|\+639)\d{9}$/;
@@ -400,7 +432,15 @@
                 }
                 if (!form.querySelector('[name="terms"]').checked) e.terms = 'You need to agree to continue.';
                 return e;
-            }
+            },
+            verify: function () {
+                var input = form.querySelector('[name="valid_id"]');
+                var f = input.files[0];
+                if (!f) return { valid_id: 'Upload your valid ID to continue.' };
+                if (!/\.(jpe?g|png|pdf)$/i.test(f.name)) return { valid_id: 'Use a JPG, PNG or PDF file.' };
+                if (f.size > MAX_BYTES) return { valid_id: 'This file is over 5 MB. Choose a smaller one.' };
+                return {};
+            },
         };
 
         /* ---------- rendering ---------- */
@@ -506,21 +546,27 @@
             if (e.persisted) { nextBtn.disabled = false; render(); }
         });
 
-        /* ---------- initial state ---------- */
+
+       /* ---------- initial state ---------- */
         var errorKeys = Object.keys(serverErrors || {});
-        var role = checkedValue('role');
-        var start = 0;
+        var role      = checkedValue('role');
+        var start     = 0;
+
+        var stepOf = Object.assign({}, STEP_OF);
+        stepOf.valid_id = role === 'landlord' ? 'documents' : 'verify';
 
         if (errorKeys.length) {
             var f0 = flow();
             var earliest = f0.length - 1;
             errorKeys.forEach(function (k) {
-                var pos = f0.indexOf(STEP_OF[k] || 'account');
+                var pos = f0.indexOf(stepOf[k] || 'account');
                 if (pos !== -1 && pos < earliest) earliest = pos;
             });
             start = earliest;
             // Uploaded files cannot be restored by the browser, so send landlords back to re-pick them
-            if (role === 'landlord') start = Math.min(start, f0.indexOf('documents'));
+            if (role === 'renter' && errorKeys.includes('valid_id')) {
+                start = Math.min(start, f0.indexOf('verify'));
+            }
             errorKeys.forEach(function (k) { showError(k, serverErrors[k][0]); });
         } else if (fromLink && role) {
             start = 1;
