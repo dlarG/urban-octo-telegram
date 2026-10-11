@@ -36,11 +36,17 @@ class TenancyController extends Controller
         $this->authorize('end', $tenancy);
 
         $data = $request->validate([
-            'reason' => ['required', 'string', 'max:500'],
+            'reason'             => ['required', 'string', 'max:500'],
+            'checkout_compliant' => ['nullable', 'boolean'],
         ]);
 
         try {
-            $this->service->end($tenancy, $request->user(), $data['reason']);
+            $this->service->end(
+                $tenancy,
+                $request->user(),
+                $data['reason'],
+                $data['checkout_compliant'] ?? null,
+            );
         } catch (\DomainException $e) {
             return back()->withErrors(['general' => $e->getMessage()]);
         }
@@ -48,5 +54,33 @@ class TenancyController extends Controller
         return redirect()
             ->route('landlord.tenancies.show', $tenancy)
             ->with('status', 'Tenancy ended.');
+    }
+    public function recordPayment(Request $request, Tenancy $tenancy, \App\Services\PaymentService $payments): RedirectResponse
+    {
+        $this->authorize('view', $tenancy);
+
+        $data = $request->validate([
+            'amount'    => ['required', 'numeric', 'min:0.01', 'max:9999999'],
+            'due_date'  => ['required', 'date'],
+            'on_time'   => ['required', 'boolean'],
+            'reference' => ['nullable', 'string', 'max:100'],
+            'notes'     => ['nullable', 'string', 'max:500'],
+        ]);
+
+        try {
+            $payments->record(
+                $tenancy,
+                $request->user(),
+                (float) $data['amount'],
+                $data['due_date'],
+                (bool) $data['on_time'],
+                $data['reference'] ?? null,
+                $data['notes'] ?? null,
+            );
+        } catch (\DomainException $e) {
+            return back()->withErrors(['general' => $e->getMessage()]);
+        }
+
+        return back()->with('status', 'Payment recorded.');
     }
 }

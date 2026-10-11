@@ -24,6 +24,10 @@ Route::middleware(['auth', 'active', 'role.renter'])
         Route::get('/applications', [\App\Http\Controllers\Renter\ApplicationController::class, 'index'])->name('applications');
         Route::post('/rooms/{room}/apply', [\App\Http\Controllers\Renter\ApplicationController::class, 'store'])->name('applications.store');
         Route::delete('/applications/{application}', [\App\Http\Controllers\Renter\ApplicationController::class, 'withdraw'])->name('applications.withdraw');
+        Route::get('/trust', [\App\Http\Controllers\Renter\TrustScoreController::class, 'show'])->name('trust');
+        Route::post('/trust/events/{event}/dispute',
+            [\App\Http\Controllers\Renter\DisputeController::class, 'store'])
+            ->name('trust.dispute');
     });
 
 // Landlord
@@ -90,6 +94,10 @@ Route::middleware(['auth', 'active', 'role.landlord'])
             Route::post('/tenancies/{tenancy}/end',
                 [\App\Http\Controllers\Landlord\TenancyController::class, 'end'])
                 ->name('tenancies.end');
+            
+            Route::post('/tenancies/{tenancy}/payments',
+                [\App\Http\Controllers\Landlord\TenancyController::class, 'recordPayment'])
+                ->name('tenancies.payments.store');
         });
     });
 

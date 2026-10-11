@@ -85,8 +85,12 @@ class TenancyService
     /**
      * End an active tenancy (mutually agreed, renter moved out, etc.)
      */
-    public function end(Tenancy $tenancy, User $landlord, string $reason): Tenancy
-    {
+    public function end(
+        Tenancy $tenancy,
+        User $landlord,
+        string $reason,
+        ?bool $checkoutCompliant = null,
+    ): Tenancy {
         if ($tenancy->landlord_id !== $landlord->id) {
             throw new \DomainException('You do not own this tenancy.');
         }
@@ -94,17 +98,32 @@ class TenancyService
             throw new \DomainException('Only active tenancies can be ended.');
         }
 
-        return DB::transaction(function () use ($tenancy, $reason) {
+        return DB::transaction(function () use ($tenancy, $landlord, $reason, $checkoutCompliant) {
             $tenancy->update([
                 'status'             => TenancyStatus::Completed,
                 'completed_at'       => now(),
                 'termination_reason' => $reason,
             ]);
 
-            // Free the room back up (unless it's already been delisted by the landlord)
+            // Free the room back up
             $room = $tenancy->room;
             if ($room->status === RoomStatus::Full) {
                 $room->update(['status' => RoomStatus::Available]);
+            }
+
+            // Fire checkout trust event if rating provided
+            if ($checkoutCompliant !== null) {
+                app(TrustScoreService::class)->record(
+                    user: $tenancy->renter,
+                    type: $checkoutCompliant
+                        ? \App\Enums\TrustEventType::CheckoutCompliant
+                        : \App\Enums\TrustEventType::CheckoutViolation,
+                    reason: $checkoutCompliant
+                        ? "Compliant checkout for {$room->room_label}"
+                        : "Checkout violation for {$room->room_label}: {$reason}",
+                    tenancyId: $tenancy->id,
+                    createdBy: $landlord->id,
+                );
             }
 
             return $tenancy;
