@@ -46,7 +46,7 @@
     @endphp
 
     <div class="mx-auto max-w-6xl">
-
+        @include('partials.renter-profile-banner')
         <a href="{{ route('renter.search') }}" class="inline-flex items-center gap-1 text-xs font-medium text-muted hover:text-bay">
             <svg viewBox="0 0 24 24" class="ico" style="width:.9rem;height:.9rem"><use href="#l-back"/></svg>
             Back to search

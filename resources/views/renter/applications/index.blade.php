@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="mx-auto max-w-7xl">
+        @include('partials.renter-profile-banner')
 
         {{-- ================= Header ================= --}}
         <section class="relative isolate overflow-hidden rounded-3xl bg-bay text-white">

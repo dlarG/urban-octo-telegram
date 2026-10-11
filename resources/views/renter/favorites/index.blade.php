@@ -22,7 +22,7 @@
     @include('renter.search._amenity-icon')
 
     <div class="mx-auto max-w-7xl">
-
+        @include('partials.renter-profile-banner')
         {{-- ================= Header ================= --}}
         <section class="relative isolate overflow-hidden rounded-3xl bg-bay text-white">
             <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=70"
