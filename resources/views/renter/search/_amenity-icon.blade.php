@@ -38,4 +38,3 @@
         default                                                                                 => 'check',
     };
 @endphp
-<svg viewBox="0 0 24 24" class="ico {{ $class ?? '' }}" style="{{ $style ?? 'width:1rem;height:1rem' }}" aria-hidden="true"><use href="#am-{{ $iconId }}"/></svg>

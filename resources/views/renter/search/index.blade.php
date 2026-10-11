@@ -33,12 +33,159 @@
     <div class="mx-auto max-w-7xl">
 
         {{-- ================= Header ================= --}}
-        <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <h1 class="font-display text-2xl font-bold text-bay sm:text-3xl">Find a place</h1>
-                <p class="mt-1 text-sm text-muted">Boarding houses in Sogod from landlords checked by an admin.</p>
+        <section class="relative z-20 rounded-3xl bg-bay text-white">
+
+            {{-- Background layer: the only part that clips --}}
+            <div class="absolute inset-0 overflow-hidden rounded-3xl" aria-hidden="true">
+                <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=70"
+                    alt="" class="h-full w-full object-cover" onerror="this.style.visibility='hidden'">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#0B3C49] via-[#0B3C49]/85 to-[#0B3C49]/40"></div>
             </div>
-        </div>
+
+            {{-- Content layer --}}
+            <div class="relative px-6 py-8 sm:px-10 sm:py-10">
+
+                {{-- Only the text is narrow --}}
+                <div class="max-w-xl">
+                    <h1 class="font-display text-2xl font-bold sm:text-3xl">Find a place</h1>
+                    <p class="mt-3 text-base leading-relaxed text-white/85">
+                        Boarding houses in Sogod from landlords checked by an admin.
+                    </p>
+                </div>
+                <form method="GET" action="{{ route('renter.search') }}"
+                    class="relative mt-6"
+                    x-data="{ open: {{ $filterCount > 0 ? 'true' : 'false' }} }"
+                    @click.outside="open = false">
+
+                    <div class="rounded-xl border border-line bg-white p-2 text-bay shadow-lg">
+                        <div class="flex flex-col gap-2 sm:flex-row">
+                            <div class="relative flex-1">
+                                <input type="search" name="q" value="{{ request('q') }}"
+                                    placeholder="Search by name or barangay"
+                                    aria-label="Search by name or barangay"
+                                    class="field h-10 w-full pl-10 pr-3 text-sm">
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button type="button" @click="open = !open"
+                                        class="btn btn-secondary h-10 flex-1 px-4 text-sm sm:flex-none"
+                                        :aria-expanded="open.toString()" aria-controls="filterPanel">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.75" stroke="currentColor" class="h-4 w-4" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                                    </svg>
+                                    <span>Filters</span>
+                                    @if ($filterCount > 0)
+                                        <span class="grid h-4 min-w-4 place-items-center rounded-full bg-bay px-1 text-[10px] font-semibold text-white">{{ $filterCount }}</span>
+                                    @endif
+                                </button>
+                                <button type="submit" class="btn btn-primary h-10 flex-1 px-5 text-sm sm:flex-none">Search</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Filter panel: absolutely positioned, floats over results --}}
+                    <div id="filterPanel" class="absolute left-0 right-0 top-full z-30 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-line bg-white p-4 text-bay shadow-xl sm:p-5"
+                        x-show="open"
+                        x-cloak
+                        x-transition:enter="transition ease-out duration-150"
+                        x-transition:enter-start="opacity-0 -translate-y-1 scale-[0.99]"
+                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 -translate-y-1"
+                    >
+
+                        <div class="grid gap-5 lg:grid-cols-3">
+                            {{-- Gender policy --}}
+                            <fieldset>
+                                <legend class="mb-2 text-[13px] font-medium text-bay">Gender policy</legend>
+                                <div class="flex flex-wrap gap-1.5">
+                                    @foreach (['' => 'Any', 'male_only' => 'Male only', 'female_only' => 'Female only', 'mixed' => 'Mixed'] as $value => $label)
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="gender" value="{{ $value }}" class="peer sr-only" @checked((string) request('gender') === (string) $value)>
+                                            <span class="block rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-bay hover:bg-mist peer-checked:border-[#0B3C49] peer-checked:bg-[#0B3C49] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#177E89]">{{ $label }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </fieldset>
+
+                            {{-- Price --}}
+                            <fieldset>
+                                <legend class="mb-2 text-[13px] font-medium text-bay">Monthly price</legend>
+                                <div class="grid grid-cols-2 gap-2.5">
+                                    <label class="relative block">
+                                        <span class="sr-only">Minimum price</span>
+                                        <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span>
+                                        <input type="number" inputmode="numeric" min="0" name="min_price" value="{{ request('min_price') }}" placeholder="Min" class="field !h-10 pl-7 text-sm">
+                                    </label>
+                                    <label class="relative block">
+                                        <span class="sr-only">Maximum price</span>
+                                        <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span>
+                                        <input type="number" inputmode="numeric" min="0" name="max_price" value="{{ request('max_price') }}" placeholder="Max" class="field !h-10 pl-7 text-sm">
+                                    </label>
+                                </div>
+                            </fieldset>
+
+                            {{-- Distance --}}
+                            <div>
+                                <label for="radius" class="mb-2 block text-[13px] font-medium text-bay">Distance from Sogod center</label>
+                                <select id="radius" name="radius" class="field !h-10 text-sm">
+                                    <option value="">Any distance</option>
+                                    @foreach ([1, 3, 5, 10] as $km)
+                                        <option value="{{ $km }}" @selected((int) request('radius') === $km)>Within {{ $km }} km</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- House rules --}}
+                        <fieldset class="mt-5">
+                            <legend class="mb-2 text-[13px] font-medium text-bay">House rules</legend>
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach ([['allows_cooking', 'Allows cooking', 'flame'], ['sub_metered', 'Sub-metered utilities', 'bolt']] as [$name, $label, $icon])
+                                    <label class="cursor-pointer">
+                                        <input type="checkbox" name="{{ $name }}" value="1" class="peer sr-only" @checked(request()->filled($name))>
+                                        <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-bay hover:bg-mist peer-checked:border-[#0B3C49] peer-checked:bg-[#0B3C49] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#177E89]">
+                                            <svg viewBox="0 0 24 24" class="ico" style="width:.85rem;height:.85rem"><use href="#am-{{ $icon }}"/></svg>{{ $label }}
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </fieldset>
+
+                        {{-- Amenities --}}
+                        <fieldset class="mt-5">
+                            <legend class="mb-2 text-[13px] font-medium text-bay">Amenities</legend>
+                            <div class="space-y-3">
+                                @foreach ($amenitiesForFilter as $category => $items)
+                                    <div>
+                                        <p class="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">{{ $category }}</p>
+                                        <div class="flex flex-wrap gap-1.5">
+                                            @foreach ($items as $a)
+                                                <label class="cursor-pointer">
+                                                    <input type="checkbox" name="amenities[]" value="{{ $a->id }}" class="peer sr-only" @checked(in_array($a->id, $selectedAmenities))>
+                                                    <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-bay hover:bg-mist peer-checked:border-[#0B3C49] peer-checked:bg-[#0B3C49] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#177E89]">
+                                                        @include('renter.search._amenity-icon', ['key' => $a->icon_key ?? '', 'name' => $a->name])
+                                                        {{ $a->name }}
+                                                    </span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </fieldset>
+
+                        <div class="mt-5 flex justify-end gap-2 border-t border-line pt-4">
+                            <a href="{{ route('renter.search') }}" class="btn btn-secondary text-sm">Clear all</a>
+                            <button type="submit" class="btn btn-primary text-sm">Apply filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
 
         {{-- Active tenancy notice --}}
         @if ($hasActiveTenancy)
@@ -60,144 +207,6 @@
                 <ul class="space-y-1">@foreach ($errors->all() as $e) <li>{{ $e }}</li> @endforeach</ul>
             </div>
         @endif
-
-        {{-- ================= Search + filters ================= --}}
-        <form method="GET" action="{{ route('renter.search') }}"
-            class="relative mt-5"
-            x-data="{ open: {{ $filterCount > 0 ? 'true' : 'false' }} }"
-            @click.outside="open = false">
-
-            {{-- Search bar (stays in flow, compact) --}}
-            <div class="rounded-xl border border-line bg-white p-2 shadow-sm">
-                <div class="flex flex-col gap-2 sm:flex-row">
-
-                    {{-- Search input with properly-sized icon --}}
-                    <div class="relative flex-1">
-
-                        <input type="search" name="q" value="{{ request('q') }}"
-                            placeholder="Search by name or barangay"
-                            aria-label="Search by name or barangay"
-                            class="field h-10 w-full pl-10 pr-3 text-sm">
-                    </div>
-
-                    <div class="flex gap-2">
-                        <button type="button" @click="open = !open"
-                                class="btn btn-secondary h-10 flex-1 px-4 text-sm sm:flex-none"
-                                :aria-expanded="open.toString()" aria-controls="filterPanel">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.75" stroke="currentColor" class="h-4 w-4" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-                            </svg>
-                            <span>Filters</span>
-                            @if ($filterCount > 0)
-                                <span class="grid h-4 min-w-4 place-items-center rounded-full bg-bay px-1 text-[10px] font-semibold text-white">{{ $filterCount }}</span>
-                            @endif
-                        </button>
-                        <button type="submit" class="btn btn-primary h-10 flex-1 px-5 text-sm sm:flex-none">Search</button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Filter panel: absolutely positioned, floats over results --}}
-            <div id="filterPanel"
-                 x-show="open"
-                 x-cloak
-                 x-transition:enter="transition ease-out duration-150"
-                 x-transition:enter-start="opacity-0 -translate-y-1 scale-[0.99]"
-                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                 x-transition:leave="transition ease-in duration-100"
-                 x-transition:leave-start="opacity-100 translate-y-0"
-                 x-transition:leave-end="opacity-0 -translate-y-1"
-                 class="absolute left-0 right-0 top-full z-30 mt-2 max-h-[70vh] overflow-y-auto rounded-2xl border border-line bg-white p-4 shadow-xl sm:p-5">
-
-                <div class="grid gap-5 lg:grid-cols-3">
-                    {{-- Gender policy --}}
-                    <fieldset>
-                        <legend class="mb-2 text-[13px] font-medium text-bay">Gender policy</legend>
-                        <div class="flex flex-wrap gap-1.5">
-                            @foreach (['' => 'Any', 'male_only' => 'Male only', 'female_only' => 'Female only', 'mixed' => 'Mixed'] as $value => $label)
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="gender" value="{{ $value }}" class="peer sr-only" @checked((string) request('gender') === (string) $value)>
-                                    <span class="block rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-bay hover:bg-mist peer-checked:border-[#0B3C49] peer-checked:bg-[#0B3C49] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#177E89]">{{ $label }}</span>
-                                </label>
-                            @endforeach
-                        </div>
-                    </fieldset>
-
-                    {{-- Price --}}
-                    <fieldset>
-                        <legend class="mb-2 text-[13px] font-medium text-bay">Monthly price</legend>
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <label class="relative block">
-                                <span class="sr-only">Minimum price</span>
-                                <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span>
-                                <input type="number" inputmode="numeric" min="0" name="min_price" value="{{ request('min_price') }}" placeholder="Min" class="field !h-10 pl-7 text-sm">
-                            </label>
-                            <label class="relative block">
-                                <span class="sr-only">Maximum price</span>
-                                <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span>
-                                <input type="number" inputmode="numeric" min="0" name="max_price" value="{{ request('max_price') }}" placeholder="Max" class="field !h-10 pl-7 text-sm">
-                            </label>
-                        </div>
-                    </fieldset>
-
-                    {{-- Distance --}}
-                    <div>
-                        <label for="radius" class="mb-2 block text-[13px] font-medium text-bay">Distance from Sogod center</label>
-                        <select id="radius" name="radius" class="field !h-10 text-sm">
-                            <option value="">Any distance</option>
-                            @foreach ([1, 3, 5, 10] as $km)
-                                <option value="{{ $km }}" @selected((int) request('radius') === $km)>Within {{ $km }} km</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                {{-- House rules --}}
-                <fieldset class="mt-5">
-                    <legend class="mb-2 text-[13px] font-medium text-bay">House rules</legend>
-                    <div class="flex flex-wrap gap-1.5">
-                        @foreach ([['allows_cooking', 'Allows cooking', 'flame'], ['sub_metered', 'Sub-metered utilities', 'bolt']] as [$name, $label, $icon])
-                            <label class="cursor-pointer">
-                                <input type="checkbox" name="{{ $name }}" value="1" class="peer sr-only" @checked(request()->filled($name))>
-                                <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-bay hover:bg-mist peer-checked:border-[#0B3C49] peer-checked:bg-[#0B3C49] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#177E89]">
-                                    <svg viewBox="0 0 24 24" class="ico" style="width:.85rem;height:.85rem"><use href="#am-{{ $icon }}"/></svg>{{ $label }}
-                                </span>
-                            </label>
-                        @endforeach
-                    </div>
-                </fieldset>
-
-                {{-- Amenities --}}
-                <fieldset class="mt-5">
-                    <legend class="mb-2 text-[13px] font-medium text-bay">Amenities</legend>
-                    <div class="space-y-3">
-                        @foreach ($amenitiesForFilter as $category => $items)
-                            <div>
-                                <p class="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">{{ $category }}</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    @foreach ($items as $a)
-                                        <label class="cursor-pointer">
-                                            <input type="checkbox" name="amenities[]" value="{{ $a->id }}" class="peer sr-only" @checked(in_array($a->id, $selectedAmenities))>
-                                            <span class="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-bay hover:bg-mist peer-checked:border-[#0B3C49] peer-checked:bg-[#0B3C49] peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#177E89]">
-                                                @include('renter.search._amenity-icon', ['key' => $a->icon_key ?? '', 'name' => $a->name])
-                                                {{ $a->name }}
-                                            </span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </fieldset>
-
-                <div class="mt-5 flex justify-end gap-2 border-t border-line pt-4">
-                    <a href="{{ route('renter.search') }}" class="btn btn-secondary text-sm">Clear all</a>
-                    <button type="submit" class="btn btn-primary text-sm">Apply filters</button>
-                </div>
-            </div>
-        </form>
 
         {{-- Applied filter chips --}}
         @if (count($chips))

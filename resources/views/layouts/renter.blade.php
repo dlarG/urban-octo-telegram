@@ -4,7 +4,9 @@
     <x-side-link :href="route('renter.dashboard')" :active="request()->routeIs('renter.dashboard')" icon="grid">
         Dashboard
     </x-side-link>
-    <x-side-link :href="route('renter.search')" :active="request()->routeIs('renter.search')" icon="search">
+    <x-side-link :href="route('renter.search')"
+                :active="request()->routeIs('renter.search', 'renter.properties.*')"
+                icon="search">
         Find a place
     </x-side-link>
     <x-side-link :href="route('renter.favorites')" :active="request()->routeIs('renter.favorites')" icon="heart">
