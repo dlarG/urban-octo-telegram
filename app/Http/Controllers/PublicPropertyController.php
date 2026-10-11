@@ -14,8 +14,7 @@ class PublicPropertyController extends Controller
     {
         $query = BoardingHouse::query()
             ->where('status', PropertyStatus::Active)
-            ->with(['propertyImages', 'amenities'])
-            ->withCount(['rooms' => fn($q) => $q->where('status', RoomStatus::Available)]);
+            ->with('propertyImages');
 
         // Filter: gender_policy
         if ($gender = $request->input('gender')) {
@@ -53,9 +52,8 @@ class PublicPropertyController extends Controller
         }
 
         $houses = $query->latest()->paginate(12)->withQueryString();
-        $amenitiesForFilter = Amenity::orderBy('category')->orderBy('name')->get()->groupBy('category');
 
-        return view('public.properties.index', compact('houses', 'amenitiesForFilter'));
+        return view('public.properties.index', compact('houses'));
     }
 
     public function show(BoardingHouse $boarding_house): View

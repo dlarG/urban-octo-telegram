@@ -8,6 +8,14 @@
         </a>
 
         <h1 class="mt-3 text-2xl font-semibold">{{ $house->name }}</h1>
+        <div class="mt-2">
+            @include('partials.location-modal', [
+                'modalId' => 'loc-house-'.$house->id,
+                'lat'     => $house->lat,
+                'lng'     => $house->lng,
+                'title'   => $house->name,
+            ])
+        </div>
         <p class="text-gray-600 mt-1">
             {{ $house->address_line }}, {{ $house->barangay }}, {{ $house->city }}, {{ $house->province }}
         </p>

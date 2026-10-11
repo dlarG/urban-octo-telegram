@@ -62,6 +62,25 @@ class BoardingHouse extends Model
     {
         return $this->belongsToMany(Amenity::class, 'boarding_house_amenities')->withTimestamps();
     }
+    public function getPriceRangeAttribute(): ?array
+    {
+        $min = $this->rooms_min_base_price_monthly ?? null;
+        $max = $this->rooms_max_base_price_monthly ?? null;
+
+        if ($min === null && $max === null) return null;
+        return ['min' => (float) $min, 'max' => (float) $max];
+    }
+
+    public function getPriceRangeLabelAttribute(): ?string
+    {
+        $range = $this->price_range;
+        if (! $range) return null;
+
+        $min = number_format($range['min'], 0);
+        $max = number_format($range['max'], 0);
+
+        return $min === $max ? "₱{$min}" : "₱{$min} – ₱{$max}";
+    }
     public function favorites(): HasMany     { return $this->hasMany(Favorite::class); }
     public function reviews(): HasMany       { return $this->hasMany(Review::class); }
 

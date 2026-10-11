@@ -104,7 +104,7 @@
         $navUser   = auth()->user();
         $initials  = collect(preg_split('/\s+/', trim($navUser->name)))->filter()->take(2)
             ->map(fn ($p) => mb_strtoupper(mb_substr($p, 0, 1)))->join('');
-        $navFirst  = \Illuminate\Support\Str::of($navUser->name)->before(' ');
+        $navFirst  = \Illuminate\Support\Str::of($navUser->name);
     @endphp
 
     <div class="lg:flex lg:min-h-screen">
@@ -161,12 +161,6 @@
                         <svg viewBox="0 0 24 24" class="ico"><use href="#l-menu"/></svg>
                     </button>
 
-                    <a href="{{ url('/') }}" class="flex flex-none items-center gap-2 lg:hidden" aria-label="RentStreet home">
-                        <span class="grid h-8 w-8 place-items-center rounded-lg bg-bay text-white">
-                            <svg viewBox="0 0 24 24" class="ico" style="width:1.1rem;height:1.1rem"><use href="#l-home"/></svg>
-                        </span>
-                        <span class="font-display text-lg font-bold text-bay max-sm:sr-only">RentStreet</span>
-                    </a>
 
                     {{-- Left/center slot: search, title, etc. supplied by the role layout --}}
                     <div class="min-w-0 flex-1">
@@ -175,7 +169,7 @@
 
                     {{-- Right slot: quick actions supplied by the role layout --}}
                     <div class="flex flex-none items-center gap-1.5 sm:gap-2">
-                        @yield('topbar_actions')
+                        
 
                         {{-- User menu --}}
                         <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @click.outside="open = false">
@@ -213,7 +207,7 @@
 
             {{-- ---------- Page ---------- --}}
             <main id="main">
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+                <div class="mx-auto max-w-7xl py-8 px-4 sm:px-4 lg:px-4">
                     @if (session('status'))
                         <div class="mb-6 flex items-start gap-3 rounded-lg bg-mist px-4 py-3 text-sm text-bay" role="status">
                             <svg viewBox="0 0 24 24" class="ico mt-0.5 text-sea" style="width:1.1rem;height:1.1rem"><use href="#l-check-circle"/></svg>

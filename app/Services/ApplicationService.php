@@ -32,6 +32,25 @@ class ApplicationService
             throw new \DomainException('You already have an active application for this room.');
         }
 
+        $activeTenancy = \App\Models\Tenancy::query()
+            ->where('renter_id', $renter->id)
+            ->where('status', \App\Enums\TenancyStatus::Active)
+            ->exists();
+
+        if ($renter->hasActiveTenancy()) {
+            throw new \DomainException(
+                'You already have an active tenancy. You can only apply again after it ends.'
+            );
+        }
+
+        if ($room->status !== RoomStatus::Available) {
+            throw new \DomainException('This room is not currently accepting applications.');
+        }
+
+        if ($room->hasBlockingApplicationFrom($renter->id)) {
+            throw new \DomainException('You already have an active application for this room.');
+        }
+
         return DB::transaction(function () use ($renter, $room, $message) {
             return RentalApplication::create([
                 'renter_id' => $renter->id,

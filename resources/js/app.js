@@ -1,15 +1,5 @@
-import "./bootstrap";
-
-import Alpine from "alpinejs";
-
-window.Alpine = Alpine;
-
-Alpine.start();
-
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-
-// Fix leaflet default icon path issue with Vite
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -21,41 +11,54 @@ L.Icon.Default.mergeOptions({
     shadowUrl: markerShadow,
 });
 
+// --- Picker (landlord: click to place pin) ---
 document.addEventListener("DOMContentLoaded", () => {
     const el = document.getElementById("map-picker");
-    if (!el) return;
+    if (el) {
+        const startLat = parseFloat(el.dataset.lat);
+        const startLng = parseFloat(el.dataset.lng);
+        const map = L.map(el).setView([startLat, startLng], 15);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap contributors",
+            maxZoom: 19,
+        }).addTo(map);
+        const marker = L.marker([startLat, startLng], {
+            draggable: true,
+        }).addTo(map);
+        const latInput = document.getElementById("lat");
+        const lngInput = document.getElementById("lng");
+        const setPos = (lat, lng) => {
+            latInput.value = lat.toFixed(7);
+            lngInput.value = lng.toFixed(7);
+        };
+        setPos(startLat, startLng);
+        marker.on("dragend", (e) => {
+            const { lat, lng } = e.target.getLatLng();
+            setPos(lat, lng);
+        });
+        map.on("click", (e) => {
+            marker.setLatLng(e.latlng);
+            setPos(e.latlng.lat, e.latlng.lng);
+        });
+    }
+});
 
-    const startLat = parseFloat(el.dataset.lat);
-    const startLng = parseFloat(el.dataset.lng);
+// --- Viewer (public + renter: show pin, no interaction) ---
+function initMapViewer(el) {
+    const lat = parseFloat(el.dataset.lat);
+    const lng = parseFloat(el.dataset.lng);
 
-    const map = L.map(el).setView([startLat, startLng], 15);
-
+    const map = L.map(el, { scrollWheelZoom: false }).setView([lat, lng], 16);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
         maxZoom: 19,
     }).addTo(map);
 
-    const marker = L.marker([startLat, startLng], { draggable: true }).addTo(
-        map
-    );
+    L.marker([lat, lng]).addTo(map);
+}
 
-    const latInput = document.getElementById("lat");
-    const lngInput = document.getElementById("lng");
+window.rsInitMapViewer = initMapViewer;
 
-    const setPos = (lat, lng) => {
-        latInput.value = lat.toFixed(7);
-        lngInput.value = lng.toFixed(7);
-    };
-
-    setPos(startLat, startLng);
-
-    marker.on("dragend", (e) => {
-        const { lat, lng } = e.target.getLatLng();
-        setPos(lat, lng);
-    });
-
-    map.on("click", (e) => {
-        marker.setLatLng(e.latlng);
-        setPos(e.latlng.lat, e.latlng.lng);
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[data-map-viewer]").forEach(initMapViewer);
 });

@@ -16,8 +16,7 @@ Route::middleware(['auth', 'active', 'role.renter'])
     ->prefix('renter')->name('renter.')
     ->group(function () {
         Route::get('/dashboard', fn() => view('renter.dashboard'))->name('dashboard');
-        Route::get('/search',    fn() => view('renter.search'))->name('search');
-        Route::get('/favorites', fn() => view('renter.favorites'))->name('favorites');
+        Route::get('/search', [\App\Http\Controllers\Renter\SearchController::class, 'index'])->name('search');
         Route::get('/profile',   fn() => view('renter.profile'))->name('profile');
         Route::get('/trust',     fn() => view('renter.trust'))->name('trust');
         
@@ -28,6 +27,14 @@ Route::middleware(['auth', 'active', 'role.renter'])
         Route::post('/trust/events/{event}/dispute',
             [\App\Http\Controllers\Renter\DisputeController::class, 'store'])
             ->name('trust.dispute');
+        Route::get('/properties/{boarding_house}',
+            [\App\Http\Controllers\Renter\SearchController::class, 'show'])
+            ->name('properties.show');
+
+        Route::get('/favorites', [\App\Http\Controllers\Renter\FavoriteController::class, 'index'])->name('favorites');
+        Route::post('/properties/{boarding_house}/favorite',
+            [\App\Http\Controllers\Renter\FavoriteController::class, 'toggle'])
+            ->name('favorites.toggle');
     });
 
 // Landlord

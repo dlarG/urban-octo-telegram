@@ -11,8 +11,8 @@
         $scoreValue = $hasScore ? (float) $scoreRow->score : null;
 
         // Pass these from the controller when they are ready; until then the tiles show a dash.
-        $applicationsCount = $applicationsCount ?? null;
-        $favoritesCount    = $favoritesCount ?? null;
+        $applicationsCount = $user->applications()->count();
+        $favoritesCount    = $user->favorites()->count();
 
         $pct       = $hasScore ? max(0, min(100, $scoreValue)) : 0;
         $circ      = 2 * pi() * 52;
@@ -38,14 +38,35 @@
                         <svg viewBox="0 0 24 24" class="ico"><use href="#l-search"/></svg>
                         Find a place
                     </a>
-                    <a href="{{ route('renter.favorites') }}"
-                       class="btn btn-lg border border-white/40 text-white hover:bg-white/10">
+                    <a href="{{ route('renter.favorites') }}" class="btn btn-lg border border-white/40 text-white hover:bg-white/10">
                         <svg viewBox="0 0 24 24" class="ico"><use href="#l-heart"/></svg>
                         Your favorites
                     </a>
                 </div>
             </div>
         </section>
+        @php
+            $renter        = auth()->user();
+            $activeTenancy = $renter->activeTenancy();
+        @endphp
+        @if ($activeTenancy)
+            <section class="rounded-2xl border border-[#CDE8E5] bg-[#E6F4F2] p-5">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="grid h-10 w-10 place-items-center rounded-full bg-sea/10 text-sea">
+                        <svg viewBox="0 0 24 24" class="ico"><use href="#l-check-circle"/></svg>
+                    </span>
+                    <div class="flex-1 min-w-[200px]">
+                        <p class="font-display font-bold text-bay">You have an active tenancy</p>
+                        <p class="text-sm text-muted mt-0.5">
+                            {{ $activeTenancy->room->room_label }} ·
+                            {{ $activeTenancy->room->boardingHouse->name }}
+                            · started {{ $activeTenancy->start_date->format('M d, Y') }}
+                        </p>
+                    </div>
+                    <a href="{{ route('renter.applications') }}" class="btn btn-secondary">View applications</a>
+                </div>
+            </section>
+        @endif
 
         {{-- ================= Stats ================= --}}
         <section aria-label="Your activity" class="grid gap-4 sm:grid-cols-3">

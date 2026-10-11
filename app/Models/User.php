@@ -67,4 +67,15 @@ class User extends Authenticatable
     {
         return $this->locked_until && $this->locked_until->isFuture();
     }
+    public function activeTenancy(): ?\App\Models\Tenancy
+    {
+        return $this->tenancies()
+            ->where('status', \App\Enums\TenancyStatus::Active)
+            ->first();
+    }
+
+    public function hasActiveTenancy(): bool
+    {
+        return $this->activeTenancy() !== null;
+    }
 }

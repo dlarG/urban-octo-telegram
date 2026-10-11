@@ -72,8 +72,8 @@
                 @foreach ($houses as $house)
                     @php $cover = $house->primaryImage(); @endphp
                     <a href="{{ route('properties.show', $house) }}"
-                       class="block bg-white rounded-lg border hover:shadow-md transition overflow-hidden">
-                        <div class="aspect-[16/10] bg-gray-100">
+                    class="block bg-white rounded-lg border hover:shadow-md transition overflow-hidden">
+                        <div class="aspect-[16/10] bg-gray-100 relative">
                             @if ($cover)
                                 <img src="{{ Storage::url($cover->path) }}" class="w-full h-full object-cover">
                             @else
@@ -81,14 +81,21 @@
                                     No photo
                                 </div>
                             @endif
+
+                            {{-- Lock badge: signals info is hidden --}}
+                            <span class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-1 text-xs font-medium text-bay shadow-sm">
+                                <svg viewBox="0 0 24 24" class="ico" style="width:.8rem;height:.8rem"><use href="#l-lock"/></svg>
+                                Details hidden
+                            </span>
                         </div>
                         <div class="p-4">
                             <h3 class="font-medium truncate">{{ $house->name }}</h3>
-                            <p class="text-sm text-gray-500 mt-0.5 truncate">
-                                {{ $house->barangay }}, {{ $house->city }}
-                            </p>
-                            <p class="text-sm text-gray-500 mt-1">
-                                {{ $house->rooms_count }} {{ \Illuminate\Support\Str::plural('room', $house->rooms_count) }} available
+
+                            {{-- Placeholders --}}
+                            <p class="text-sm text-gray-400 mt-0.5">Location hidden</p>
+                            <p class="text-sm text-gray-400 mt-1">₱??? / month</p>
+                            <p class="text-xs text-gray-400 mt-2">
+                                <a href="{{ route('login') }}" class="text-indigo-600 hover:underline">Sign in</a> to see details
                             </p>
                         </div>
                     </a>

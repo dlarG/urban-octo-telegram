@@ -43,11 +43,11 @@
                     <div class="flex-1">
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <a href="{{ route('properties.show', $house) }}"
-                                   class="font-medium hover:text-indigo-600">{{ $house->name }}</a>
+                                <a href="{{ route('renter.properties.show', $house) }}"
+                                   class="font-medium hover:text-indigo-600 text-xl">{{ $house->name }}</a>
                                 <p class="text-sm text-gray-500 mt-0.5">{{ $app->room->room_label }}</p>
                             </div>
-                            <span class="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium {{ $statusClass }}">
+                            <span class="shrink-0 capitalize rounded-full px-2 py-0.5 text-xs font-medium {{ $statusClass }}">
                                 {{ $app->status->value }}
                             </span>
                         </div>
