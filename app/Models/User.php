@@ -78,4 +78,10 @@ class User extends Authenticatable
     {
         return $this->activeTenancy() !== null;
     }
+    public function hasCompletedRenterProfile(): bool
+    {
+        if (! $this->isRenter()) return true;         // non-renters trivially pass
+        $p = $this->renterProfile;
+        return $p && $p->valid_id_path && $p->valid_id_submitted_at;
+    }
 }

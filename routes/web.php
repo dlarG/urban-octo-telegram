@@ -17,7 +17,6 @@ Route::middleware(['auth', 'active', 'role.renter'])
     ->group(function () {
         Route::get('/dashboard', fn() => view('renter.dashboard'))->name('dashboard');
         Route::get('/search', [\App\Http\Controllers\Renter\SearchController::class, 'index'])->name('search');
-        Route::get('/profile',   fn() => view('renter.profile'))->name('profile');
         Route::get('/trust',     fn() => view('renter.trust'))->name('trust');
         
         Route::get('/applications', [\App\Http\Controllers\Renter\ApplicationController::class, 'index'])->name('applications');
@@ -35,6 +34,13 @@ Route::middleware(['auth', 'active', 'role.renter'])
         Route::post('/properties/{boarding_house}/favorite',
             [\App\Http\Controllers\Renter\FavoriteController::class, 'toggle'])
             ->name('favorites.toggle');
+
+        Route::post('/profile/photo', [\App\Http\Controllers\Renter\ProfileController::class, 'updatePhoto'])->name('profile.photo');
+        Route::get('/profile',  [\App\Http\Controllers\Renter\ProfileController::class, 'show'])->name('profile');
+        Route::put('/profile',  [\App\Http\Controllers\Renter\ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password',
+            [\App\Http\Controllers\Renter\ProfileController::class, 'updatePassword'])
+            ->name('profile.password');
     });
 
 // Landlord

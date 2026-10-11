@@ -20,6 +20,11 @@ class ApplicationService
      */
     public function apply(User $renter, Room $room, ?string $message = null): RentalApplication
     {
+        if (! $renter->hasCompletedRenterProfile()) {
+            throw new \DomainException(
+                'Please complete your profile and upload a valid ID before applying.'
+            );
+        }
         if (! $renter->isRenter()) {
             throw new \DomainException('Only renters can apply to rooms.');
         }

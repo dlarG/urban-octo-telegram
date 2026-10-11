@@ -20,7 +20,7 @@
     @endphp
 
     <div class="space-y-8">
-
+        @include('partials.renter-profile-banner')
         {{-- ================= Welcome ================= --}}
         <section class="relative isolate overflow-hidden rounded-3xl bg-bay text-white">
             <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=70"

@@ -31,7 +31,7 @@
     @endphp
 
     <div class="mx-auto max-w-7xl">
-
+        @include('partials.renter-profile-banner')
         {{-- ================= Header ================= --}}
         <section class="relative z-20 rounded-3xl bg-bay text-white">
 
@@ -117,12 +117,12 @@
                                 <div class="grid grid-cols-2 gap-2.5">
                                     <label class="relative block">
                                         <span class="sr-only">Minimum price</span>
-                                        <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span>
+                                        {{-- <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span> --}}
                                         <input type="number" inputmode="numeric" min="0" name="min_price" value="{{ request('min_price') }}" placeholder="Min" class="field !h-10 pl-7 text-sm">
                                     </label>
                                     <label class="relative block">
                                         <span class="sr-only">Maximum price</span>
-                                        <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span>
+                                        {{-- <span class="pointer-events-none absolute inset-y-0 left-0 grid w-8 place-items-center text-xs text-muted" aria-hidden="true">₱</span> --}}
                                         <input type="number" inputmode="numeric" min="0" name="max_price" value="{{ request('max_price') }}" placeholder="Max" class="field !h-10 pl-7 text-sm">
                                     </label>
                                 </div>

@@ -16,7 +16,7 @@ class RenterProfile extends Model
         'occupation', 'employer',
         'stay_duration',
         'budget_min', 'budget_max',
-        'valid_id_path', 'valid_id_submitted_at',
+        'valid_id_path', 'valid_id_submitted_at', 'valid_id_hash',
         'trust_score_consent',
     ];
 
