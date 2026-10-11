@@ -226,11 +226,13 @@
                     @endif
 
                     @yield('content')
+                    
+
                 </div>
             </main>
         </div>
     </div>
-
     @livewireScripts
+    
 </body>
 </html>

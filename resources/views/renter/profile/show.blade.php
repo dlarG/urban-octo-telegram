@@ -121,14 +121,14 @@
             </div>
         @endif
 
-        <div class="mt-8 grid items-start gap-8 lg:grid-cols-3">
+        <div class="mt-4 grid items-start gap-4 lg:grid-cols-3">
 
             {{-- ================= Main column ================= --}}
             <div class="space-y-8 lg:col-span-2">
 
                 <form id="profileForm" method="POST" action="{{ route('renter.profile.update') }}" enctype="multipart/form-data"
                     x-data="{ rt: '{{ old('renter_type', $profile->renter_type->value) }}' }"
-                    class="space-y-6">
+                    class="flex flex-col gap-6">
                     @csrf
                     @method('PUT')
 
