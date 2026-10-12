@@ -41,6 +41,21 @@ Route::middleware(['auth', 'active', 'role.renter'])
         Route::put('/profile/password',
             [\App\Http\Controllers\Renter\ProfileController::class, 'updatePassword'])
             ->name('profile.password');
+        Route::post('/tenancies/{tenancy}/review',
+            [\App\Http\Controllers\Renter\ReviewController::class, 'store'])
+            ->name('tenancies.review');
+        Route::put('/reviews/{review}',
+            [\App\Http\Controllers\Renter\ReviewController::class, 'update'])
+            ->name('reviews.update');
+        Route::get('/tenancies', [\App\Http\Controllers\Renter\TenancyController::class, 'index'])->name('tenancies');
+        
+        //notifications
+        Route::get('/notifications',
+            [\App\Http\Controllers\Renter\NotificationController::class, 'index'])
+            ->name('notifications');            // 👈 renamed
+        Route::post('/notifications/read-all',
+            [\App\Http\Controllers\Renter\NotificationController::class, 'markAllRead'])
+            ->name('notifications.read-all');
     });
 
 // Landlord

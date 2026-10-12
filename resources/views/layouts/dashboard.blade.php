@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#0B3C49">
     <title>@yield('title', $title ?? 'Dashboard') — RentStreet</title>
 
+    <link rel="icon" type="image/x-icon" href="{{ asset('logo_nobg.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -96,6 +97,10 @@
         <symbol id="l-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
         <symbol id="l-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></symbol>
         <symbol id="l-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
+        <symbol id="l-bell" viewBox="0 0 24 24">
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+        </symbol>
     </svg>
 
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:shadow">Skip to content</a>
@@ -176,6 +181,78 @@
                     <div class="min-w-0 flex-1">
                         @yield('topbar')
                     </div>
+                    @php
+                        $navUser = auth()->user();
+                        $unread = $navUser->unreadNotifications()->count();
+                        $recent = $navUser->notifications()->latest()->take(5)->get();
+                        $notifRoute = match ($navUser->role->value) {
+                            'renter'   => 'renter.notifications',
+                            'landlord' => 'landlord.notifications',
+                            default    => null,
+                        };
+                    @endphp
+
+                    @if ($notifRoute)
+                        <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @click.outside="open = false">
+                            <button type="button" @click="open = !open"
+                                    class="relative grid h-10 w-10 place-items-center rounded-full text-bay hover:bg-mist"
+                                    aria-label="Notifications" :aria-expanded="open.toString()">
+                                <svg viewBox="0 0 24 24" class="ico"><use href="#l-bell"/></svg>
+                                @if ($unread > 0)
+                                    <span class="absolute top-1 right-1 grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-red-500 px-1 text-[0.65rem] font-bold text-white">
+                                        {{ $unread > 9 ? '9+' : $unread }}
+                                    </span>
+                                @endif
+                            </button>
+
+                            {{-- Dropdown --}}
+                            <div x-show="open" x-cloak x-transition.origin.top.right.duration.150ms
+                                class="absolute right-0 z-40 mt-2 w-80 overflow-hidden rounded-xl border border-line bg-white shadow-xl">
+
+                                <div class="flex items-center justify-between border-b border-line px-4 py-3">
+                                    <span class="text-sm font-semibold text-bay">Notifications</span>
+                                    @if ($unread > 0)
+                                        <form method="POST" action="{{ route($notifRoute . '.read-all') }}">
+                                            @csrf
+                                            <button class="text-xs font-medium text-sea hover:underline">Mark all read</button>
+                                        </form>
+                                    @endif
+                                </div>
+
+                                @if ($recent->isEmpty())
+                                    <p class="px-4 py-6 text-center text-sm text-muted">No notifications yet.</p>
+                                @else
+                                    <div class="max-h-80 overflow-y-auto">
+                                        @foreach ($recent as $n)
+                                            @php $data = $n->data; $isUnread = is_null($n->read_at); @endphp
+                                            <a href="{{ $data['url'] ?? route($notifRoute) }}"
+                                            class="block border-b border-line px-4 py-3 last:border-0 hover:bg-mist/60 {{ $isUnread ? 'bg-[#F7FBFA]' : '' }}">
+                                                <div class="flex items-start gap-3">
+                                                    <span class="mt-1 h-2 w-2 flex-none rounded-full {{ $isUnread ? 'bg-sea' : 'bg-transparent' }}"></span>
+                                                    <div class="min-w-0 flex-1">
+                                                        <p class="truncate text-sm font-medium text-bay">
+                                                            {{ $data['title'] ?? 'Notification' }}
+                                                        </p>
+                                                        <p class="mt-0.5 line-clamp-2 text-xs text-muted">
+                                                            {{ $data['body'] ?? '' }}
+                                                        </p>
+                                                        <p class="mt-1 text-[11px] text-muted">
+                                                            {{ $n->created_at->diffForHumans() }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+
+                                    <div class="border-t border-line bg-mist/40 px-4 py-2 text-center">
+                                        <a href="{{ route($notifRoute) }}"
+                                        class="text-xs font-medium text-sea hover:underline">View all notifications</a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
                     {{-- Right slot: quick actions supplied by the role layout --}}
                     <div class="flex flex-none items-center gap-1.5 sm:gap-2">

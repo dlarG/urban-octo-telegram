@@ -71,9 +71,10 @@ class TrustScoreService
                 'score'         => $newScore,
                 'last_event_at' => now(),
             ])->save();
-
+            $user->notify(new \App\Notifications\TrustScoreChanged($event));
             return $event;
         });
+        
     }
 
     /**
