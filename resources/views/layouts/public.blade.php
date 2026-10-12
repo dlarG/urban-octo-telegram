@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#0B3C49">
-    <title>@yield('title', 'Browse rooms') — RentStreet</title>
+    <title>@yield('title', 'Browse rooms') — RenTahanan</title>
 
     <link rel="icon" type="image/x-icon" href="{{ asset('logo_nobg.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,11 +55,9 @@
 {{-- ============================== HEADER (same as homepage) ============================== --}}
 <header class="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur">
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <a href="{{ url('/') }}" class="flex items-center gap-2.5" aria-label="RentStreet home">
-            <span class="grid h-9 w-9 place-items-center rounded-lg bg-bay text-white">
-                <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#i-home"/></svg>
-            </span>
-            <span class="font-display text-xl font-bold text-bay">RentStreet</span>
+        <a href="{{ url('/') }}" class="flex items-center gap-2.5" aria-label="RenTahanan home">
+            <img src="logo_nobg.png" alt="" class="h-8 w-8" fetchpriority="high">
+            <span class="font-display text-xl font-bold text-bay">RenTahanan</span>
         </a>
 
         <nav class="hidden items-center gap-8 text-sm font-medium lg:flex" aria-label="Primary">
@@ -116,7 +114,7 @@
                 <span class="grid h-9 w-9 place-items-center rounded-lg bg-bay text-white">
                     <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#i-home"/></svg>
                 </span>
-                <span class="font-display text-xl font-bold text-bay">RentStreet</span>
+                <span class="font-display text-xl font-bold text-bay">RenTahanan</span>
             </a>
             <p class="mt-4 max-w-sm leading-relaxed text-muted">Boarding houses and rooms in Sogod, Southern Leyte, Philippines.</p>
         </div>
@@ -139,7 +137,7 @@
     </div>
     <div class="border-t border-line">
         <div class="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-5 text-sm text-muted sm:px-8 md:flex-row md:justify-between">
-            <p>&copy; {{ date('Y') }} RentStreet. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} RenTahanan. All rights reserved.</p>
             <p>Personal data is handled in line with the Data Privacy Act of 2012 (RA 10173).</p>
         </div>
     </div>

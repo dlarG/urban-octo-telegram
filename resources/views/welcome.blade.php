@@ -37,7 +37,7 @@
             'icons' => [['wifi', 'Wi-Fi'], ['flame', 'Cooking allowed'], ['video', 'CCTV']],
             'rules' => ['Curfew 9 PM', 'Female only'],
         ],
-        [
+        [   
             'name'  => 'Bayview Lodge',
             'area'  => 'Along the coastal road',
             'price' => '3,400',
@@ -127,11 +127,9 @@
 {{-- ============================== HEADER ============================== --}}
 <header class="sticky top-0 z-40 border-b border-line bg-white/90 backdrop-blur">
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <a href="{{ url('/') }}" class="flex items-center gap-2.5" aria-label="RentStreet home">
-            <span class="grid h-9 w-9 place-items-center rounded-lg bg-bay text-white">
-                <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#i-home"/></svg>
-            </span>
-            <span class="font-display text-xl font-bold text-bay">RentStreet</span>
+        <a href="{{ url('/') }}" class="flex items-center gap-2.5" aria-label="RenTahanan home">
+            <img src="logo_nobg.png" alt="" class="h-8 w-8" fetchpriority="high">
+            <span class="font-display text-xl font-bold text-bay">RenTahanan</span>
         </a>
 
         <nav class="hidden items-center gap-8 text-sm font-medium lg:flex" aria-label="Primary">
@@ -343,7 +341,7 @@
 <section id="who" class="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
     <div class="max-w-2xl">
         <h2 class="font-display text-3xl font-bold text-bay sm:text-4xl">Not just for students</h2>
-        <p class="mt-3 text-lg text-muted">RentStreet started near campus and now fits anyone who needs a room in Sogod, for a few nights or a few years.</p>
+        <p class="mt-3 text-lg text-muted">RenTahanan started near campus and now fits anyone who needs a room in Sogod, for a few nights or a few years.</p>
     </div>
 
     <div class="mt-10 grid gap-5 md:grid-cols-6 md:grid-rows-2">
@@ -472,7 +470,7 @@
 
 {{-- ============================== HOW IT WORKS ============================== --}}
 <section id="how" class="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-24">
-    <h2 class="font-display max-w-2xl text-3xl font-bold text-bay sm:text-4xl">How RentStreet works</h2>
+    <h2 class="font-display max-w-2xl text-3xl font-bold text-bay sm:text-4xl">How RenTahanan works</h2>
 
     <div class="mt-10 grid gap-6 lg:grid-cols-2">
         {{-- Renters --}}
@@ -556,7 +554,7 @@
                 <span class="grid h-9 w-9 place-items-center rounded-lg bg-bay text-white">
                     <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#i-home"/></svg>
                 </span>
-                <span class="font-display text-xl font-bold text-bay">RentStreet</span>
+                <span class="font-display text-xl font-bold text-bay">RenTahanan</span>
             </a>
             <p class="mt-4 max-w-sm leading-relaxed text-muted">
                 Boarding houses and rooms in Sogod, Southern Leyte, Philippines.
@@ -581,7 +579,7 @@
     </div>
     <div class="border-t border-line">
         <div class="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-5 text-sm text-muted sm:px-8 md:flex-row md:justify-between">
-            <p>&copy; {{ date('Y') }} RentStreet. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} RenTahanan. All rights reserved.</p>
             <p>Personal data is handled in line with the Data Privacy Act of 2012 (RA 10173).</p>
         </div>
     </div>

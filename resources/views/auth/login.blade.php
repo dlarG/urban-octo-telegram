@@ -90,7 +90,7 @@
 
     <div class="mt-8 space-y-3 border-t border-line pt-6 text-center text-sm text-muted">
         <p>
-            New to RentStreet?
+            New to RenTahanan?
             <a href="{{ route('register') }}" class="font-medium text-sea hover:underline">Create an account</a>
         </p>
         <p>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#0B3C49">
-    <title>@yield('title', $title ?? 'Dashboard') — RentStreet</title>
+    <title>@yield('title', $title ?? 'Dashboard') — RenTahanan</title>
 
     <link rel="icon" type="image/x-icon" href="{{ asset('logo_nobg.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -126,11 +126,11 @@
                aria-label="Sidebar">
 
             <div class="flex h-16 flex-none items-center justify-between border-b border-white/10 px-5">
-                <a href="{{ url('/') }}" class="flex items-center gap-2.5" aria-label="RentStreet home">
+                <a href="{{ url('/') }}" class="flex items-center gap-2.5" aria-label="RenTahanan home">
                     <span class="grid h-9 w-9 place-items-center rounded-lg bg-white text-bay">
                         <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#l-home"/></svg>
                     </span>
-                    <span class="font-display text-xl font-bold">RentStreet</span>
+                    <span class="font-display text-xl font-bold">RenTahanan</span>
                 </a>
                 <button type="button" @click="sidebarOpen = false"
                         class="-mr-2 grid h-9 w-9 place-items-center rounded-md text-white/80 hover:bg-white/10 lg:hidden"

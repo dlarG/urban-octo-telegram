@@ -2,7 +2,7 @@
 
 @section('content')
     <h1 class="text-2xl font-semibold">My tenancies</h1>
-    <p class="text-gray-600 mt-1">Your rental history on RentStreet.</p>
+    <p class="text-gray-600 mt-1">Your rental history on RenTahanan.</p>
 
     @if (session('status'))
         <div class="mt-4 rounded-md bg-green-50 text-green-800 px-4 py-3 text-sm">{{ session('status') }}</div>

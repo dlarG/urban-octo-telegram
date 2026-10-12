@@ -269,7 +269,7 @@
                                    class="mt-1 h-4 w-4 rounded border-[#9BB5B3] accent-[#0B3C49]">
                             <span class="text-sm leading-relaxed text-muted">
                                 <span class="block font-semibold text-bay">Trust score consent</span>
-                                I consent to RentStreet maintaining a trust score based on my tenancy history.
+                                I consent to RenTahanan maintaining a trust score based on my tenancy history.
                                 My score is private and only visible to landlords after I apply.
                             </span>
                         </label>
