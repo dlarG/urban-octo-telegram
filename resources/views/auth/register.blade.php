@@ -511,12 +511,12 @@
 
         // Role / renter type: mouse or touch selection moves on automatically.
         // Keyboard users (detail === 0) press Continue instead.
-        form.addEventListener('click', function (e) {
-            var t = e.target;
-            if (t.matches && t.matches('input[name="role"], input[name="renter_type"]') && e.detail > 0) {
-                setTimeout(next, 180);
-            }
-        });
+        // form.addEventListener('click', function (e) {
+        //     var t = e.target;
+        //     if (t.matches && t.matches('input[name="role"], input[name="renter_type"]') && e.detail > 0) {
+        //         setTimeout(next, 180);
+        //     }
+        // });
         form.querySelectorAll('input[name="role"]').forEach(function (r) {
             r.addEventListener('change', function () { render(); });
         });

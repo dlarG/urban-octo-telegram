@@ -64,9 +64,7 @@
         <div class="absolute inset-0 -z-10 bg-gradient-to-b from-[#0B3C49]/70 via-[#0B3C49]/40 to-[#0B3C49]/95"></div>
 
         <a href="{{ url('/') }}" class="flex items-center gap-2.5 self-start" aria-label="RenTahanan home">
-            <span class="grid h-9 w-9 place-items-center rounded-lg bg-white text-bay">
-                <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#i-home"/></svg>
-            </span>
+            <img src="logo_nobgW.png" alt="" class="h-8 w-8" fetchpriority="high">
             <span class="font-display text-xl font-bold">RenTahanan</span>
         </a>
 
