@@ -16,13 +16,6 @@
             {{ $house->name }}
         </a>
 
-        @if (session('status'))
-            <div class="mt-4 flex items-start gap-3 rounded-lg bg-mist px-4 py-3 text-sm text-bay" role="status">
-                <svg viewBox="0 0 24 24" class="ico mt-0.5 text-sea" style="width:1.1rem;height:1.1rem"><use href="#l-check-circle"/></svg>
-                <p>{{ session('status') }}</p>
-            </div>
-        @endif
-
         {{-- ================= Header ================= --}}
         <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
