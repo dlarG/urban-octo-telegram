@@ -101,6 +101,13 @@
             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
         </symbol>
+        <symbol id="l-handshake" viewBox="0 0 24 24">
+            <path d="m11 17 2 2a2.5 2.5 0 0 0 3.5 0l3.5-3.5"/>
+            <path d="m14 14 2 2a2 2 0 0 0 3-3l-4.5-4.5a5 5 0 0 0-7 0L3 12"/>
+            <path d="m2 11 6-6 4 4"/>
+            <path d="m22 11-3-3"/>
+            <path d="m7 14 3 3a2 2 0 0 0 3 0l1-1"/>
+        </symbol>
     </svg>
 
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:shadow">Skip to content</a>
@@ -168,129 +175,7 @@
         <div class="min-w-0 flex-1">
 
             {{-- ---------- Navbar ---------- --}}
-            <header class="sticky top-0 z-30 border-b border-line bg-white/90 backdrop-blur">
-                <div class="flex h-16 items-center gap-2 px-4 sm:gap-3 sm:px-6 lg:px-10">
-                    <button type="button" @click="sidebarOpen = true"
-                            class="-ml-2 grid h-10 w-10 flex-none place-items-center rounded-md text-bay hover:bg-mist lg:hidden"
-                            aria-label="Open menu" aria-controls="sidebar" :aria-expanded="sidebarOpen.toString()">
-                        <svg viewBox="0 0 24 24" class="ico"><use href="#l-menu"/></svg>
-                    </button>
-
-
-                    {{-- Left/center slot: search, title, etc. supplied by the role layout --}}
-                    <div class="min-w-0 flex-1">
-                        @yield('topbar')
-                    </div>
-                    @php
-                        $navUser = auth()->user();
-                        $unread = $navUser->unreadNotifications()->count();
-                        $recent = $navUser->notifications()->latest()->take(5)->get();
-                        $notifRoute = match ($navUser->role->value) {
-                            'renter'   => 'renter.notifications',
-                            'landlord' => 'landlord.notifications',
-                            default    => null,
-                        };
-                    @endphp
-
-                    @if ($notifRoute)
-                        <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @click.outside="open = false">
-                            <button type="button" @click="open = !open"
-                                    class="relative grid h-10 w-10 place-items-center rounded-full text-bay hover:bg-mist"
-                                    aria-label="Notifications" :aria-expanded="open.toString()">
-                                <svg viewBox="0 0 24 24" class="ico"><use href="#l-bell"/></svg>
-                                @if ($unread > 0)
-                                    <span class="absolute top-1 right-1 grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-red-500 px-1 text-[0.65rem] font-bold text-white">
-                                        {{ $unread > 9 ? '9+' : $unread }}
-                                    </span>
-                                @endif
-                            </button>
-
-                            {{-- Dropdown --}}
-                            <div x-show="open" x-cloak x-transition.origin.top.right.duration.150ms
-                                class="absolute right-0 z-40 mt-2 w-80 overflow-hidden rounded-xl border border-line bg-white shadow-xl">
-
-                                <div class="flex items-center justify-between border-b border-line px-4 py-3">
-                                    <span class="text-sm font-semibold text-bay">Notifications</span>
-                                    @if ($unread > 0)
-                                        <form method="POST" action="{{ route($notifRoute . '.read-all') }}">
-                                            @csrf
-                                            <button class="text-xs font-medium text-sea hover:underline">Mark all read</button>
-                                        </form>
-                                    @endif
-                                </div>
-
-                                @if ($recent->isEmpty())
-                                    <p class="px-4 py-6 text-center text-sm text-muted">No notifications yet.</p>
-                                @else
-                                    <div class="max-h-80 overflow-y-auto">
-                                        @foreach ($recent as $n)
-                                            @php $data = $n->data; $isUnread = is_null($n->read_at); @endphp
-                                            <a href="{{ $data['url'] ?? route($notifRoute) }}"
-                                            class="block border-b border-line px-4 py-3 last:border-0 hover:bg-mist/60 {{ $isUnread ? 'bg-[#F7FBFA]' : '' }}">
-                                                <div class="flex items-start gap-3">
-                                                    <span class="mt-1 h-2 w-2 flex-none rounded-full {{ $isUnread ? 'bg-sea' : 'bg-transparent' }}"></span>
-                                                    <div class="min-w-0 flex-1">
-                                                        <p class="truncate text-sm font-medium text-bay">
-                                                            {{ $data['title'] ?? 'Notification' }}
-                                                        </p>
-                                                        <p class="mt-0.5 line-clamp-2 text-xs text-muted">
-                                                            {{ $data['body'] ?? '' }}
-                                                        </p>
-                                                        <p class="mt-1 text-[11px] text-muted">
-                                                            {{ $n->created_at->diffForHumans() }}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        @endforeach
-                                    </div>
-
-                                    <div class="border-t border-line bg-mist/40 px-4 py-2 text-center">
-                                        <a href="{{ route($notifRoute) }}"
-                                        class="text-xs font-medium text-sea hover:underline">View all notifications</a>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- Right slot: quick actions supplied by the role layout --}}
-                    <div class="flex flex-none items-center gap-1.5 sm:gap-2">
-                        
-                        @yield('topbar_actions')
-                        {{-- User menu --}}
-                        <div class="relative" x-data="{ open: false }" @keydown.escape.window="open = false" @click.outside="open = false">
-                            <button type="button" @click="open = !open"
-                                    class="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-mist sm:pr-3"
-                                    aria-haspopup="menu" :aria-expanded="open.toString()" aria-label="Account menu">
-                                <span class="grid h-9 w-9 place-items-center rounded-full bg-bay text-sm font-semibold text-white" aria-hidden="true">{{ $initials }}</span>
-                                <span class="hidden max-w-[9rem] truncate text-sm font-medium text-bay sm:block">{{ $navFirst }}</span>
-                                <svg viewBox="0 0 24 24" class="ico hidden text-muted sm:block" style="width:1rem;height:1rem"><use href="#l-chevron-down"/></svg>
-                            </button>
-
-                            <div x-show="open" x-cloak x-transition.origin.top.right.duration.150ms
-                                 class="absolute right-0 z-40 mt-2 w-64 overflow-hidden rounded-xl border border-line bg-white shadow-xl"
-                                 role="menu">
-                                <div class="border-b border-line px-4 py-3">
-                                    <p class="truncate text-sm font-semibold text-bay">{{ $navUser->name }}</p>
-                                    <p class="truncate text-xs text-muted">{{ $navUser->email }}</p>
-                                    <span class="mt-2 inline-block rounded-full bg-mist px-2.5 py-0.5 text-xs font-medium text-bay">{{ $navUser->role->label() }}</span>
-                                </div>
-                                <div class="p-1.5">
-                                    @yield('user_menu')
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" role="menuitem" class="menu-item text-danger">
-                                            <svg viewBox="0 0 24 24" class="ico"><use href="#l-logout"/></svg>
-                                            Log out
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            @include('layouts.partials.navbar')
 
             {{-- ---------- Page ---------- --}}
             <main id="main">
