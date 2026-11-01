@@ -1,7 +1,7 @@
 @extends('layouts.landlord')
 
 @section('content')
-    <div class="max-w-3xl">
+    <div class="mwx-w-full">
         <h1 class="text-2xl font-semibold">Add a property</h1>
         <p class="text-gray-600 mt-1">Fill in the details. You'll add rooms and photos next.</p>
 

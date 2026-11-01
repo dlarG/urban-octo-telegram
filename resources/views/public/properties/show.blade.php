@@ -38,7 +38,9 @@
 
                 <div class="mt-4 max-w-2xl">
                     <h1 class="font-display text-2xl font-bold sm:text-4xl">{{ $house->name }}</h1>
-
+                    @if ($house->average_rating)
+                        <span class="text-xs text-yellow-600">★ {{ $house->average_rating }}</span>
+                    @endif
                     @if ($isGuest)
                         <p class="mt-3 flex items-center gap-1.5 text-base text-white/85">
                             <svg viewBox="0 0 24 24" class="ico" style="width:1rem;height:1rem"><use href="#i-lock"/></svg>
@@ -230,6 +232,36 @@
                         </div>
                     </section>
                 </aside>
+            </div>
+        @endif
+        @if ($house->reviews->isNotEmpty())
+            <div class="mt-8">
+                <h2 class="text-lg font-medium">
+                    Reviews
+                    <span class="text-base font-normal text-gray-500">
+                        ({{ $house->reviews->count() }} ·
+                        {{ number_format($house->reviews->avg('rating'), 1) }}/5)
+                    </span>
+                </h2>
+                <div class="mt-3 space-y-3">
+                    @foreach ($house->reviews->sortByDesc('created_at')->take(5) as $review)
+                        <div class="bg-white border rounded-lg p-4">
+                            <div class="flex items-center gap-2">
+                                <div class="text-yellow-500">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <span>{{ $i <= $review->rating ? '★' : '☆' }}</span>
+                                    @endfor
+                                </div>
+                                <span class="text-sm text-gray-500">
+                                    {{ $review->renter->name }} · {{ $review->created_at->diffForHumans() }}
+                                </span>
+                            </div>
+                            @if ($review->comment)
+                                <p class="mt-2 text-sm text-gray-700">{{ $review->comment }}</p>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
             </div>
         @endif
     </div>

@@ -3,9 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Account' }} — RentStreet</title>
+    <title>{{ $title ?? 'Account' }} — RenTahanan</title>
     <meta name="theme-color" content="#0B3C49">
 
+    <link rel="icon" type="image/x-icon" href="{{ asset('logo_nobg.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
@@ -62,11 +63,9 @@
              alt="" class="absolute inset-0 -z-10 h-full w-full object-cover" onerror="this.style.visibility='hidden'">
         <div class="absolute inset-0 -z-10 bg-gradient-to-b from-[#0B3C49]/70 via-[#0B3C49]/40 to-[#0B3C49]/95"></div>
 
-        <a href="{{ url('/') }}" class="flex items-center gap-2.5 self-start" aria-label="RentStreet home">
-            <span class="grid h-9 w-9 place-items-center rounded-lg bg-white text-bay">
-                <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#i-home"/></svg>
-            </span>
-            <span class="font-display text-xl font-bold">RentStreet</span>
+        <a href="{{ url('/') }}" class="flex items-center gap-2.5 self-start" aria-label="RenTahanan home">
+            <img src="logo_nobgW.png" alt="" class="h-8 w-8" fetchpriority="high">
+            <span class="font-display text-xl font-bold">RenTahanan</span>
         </a>
 
         <div>
@@ -89,11 +88,11 @@
     {{-- ============ Form panel ============ --}}
     <div class="flex min-h-screen flex-col">
         <header class="flex items-center justify-between px-5 py-5 sm:px-8">
-            <a href="{{ url('/') }}" class="flex items-center gap-2.5 lg:hidden" aria-label="RentStreet home">
+            <a href="{{ url('/') }}" class="flex items-center gap-2.5 lg:hidden" aria-label="RenTahanan home">
                 <span class="grid h-9 w-9 place-items-center rounded-lg bg-bay text-white">
                     <svg viewBox="0 0 24 24" class="ico" style="width:1.35rem;height:1.35rem"><use href="#i-home"/></svg>
                 </span>
-                <span class="font-display text-xl font-bold text-bay">RentStreet</span>
+                <span class="font-display text-xl font-bold text-bay">RenTahanan</span>
             </a>
             <a href="{{ url('/') }}" class="ml-auto inline-flex items-center gap-1.5 text-sm font-medium text-muted hover:text-bay">
                 <svg viewBox="0 0 24 24" class="ico" style="width:1rem;height:1rem"><use href="#i-back"/></svg>

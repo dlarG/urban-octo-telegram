@@ -48,6 +48,10 @@ class TenancyService
                 'response_message' => $overrides['response_message'] ?? null,
             ]);
 
+            $application->renter->notify(
+                new \App\Notifications\ApplicationDecisionMade($application)
+            );
+
             // Auto-reject other blocking applications on the same room
             RentalApplication::query()
                 ->where('room_id', $room->id)
@@ -78,6 +82,10 @@ class TenancyService
             'responded_at'     => now(),
             'response_message' => $reason,
         ]);
+
+        $application->renter->notify(
+            new \App\Notifications\ApplicationDecisionMade($application)
+        );
 
         return $application;
     }
@@ -125,6 +133,8 @@ class TenancyService
                     createdBy: $landlord->id,
                 );
             }
+
+            $tenancy->renter->notify(new \App\Notifications\TenancyEnded($tenancy));
 
             return $tenancy;
         });

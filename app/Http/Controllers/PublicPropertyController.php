@@ -62,6 +62,7 @@ class PublicPropertyController extends Controller
 
         $boarding_house->load([
             'amenities',
+            'reviews.renter',
             'propertyImages',
             'rooms' => fn($q) => $q->where('status', RoomStatus::Available)->with('propertyImages'),
             'landlord.landlordProfile',

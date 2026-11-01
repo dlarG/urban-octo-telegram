@@ -2,7 +2,7 @@
 
 @section('width', 'max-w-lg')
 @section('aside_title', 'Let us get you set up.')
-@section('aside_text', 'A few quick questions so RentStreet shows you the right things from the start.')
+@section('aside_text', 'A few quick questions so RenTahanan shows you the right things from the start.')
 @section('aside_note', 'Your valid ID is used for verification only and is never shown publicly.')
 
 @section('content')
@@ -68,7 +68,7 @@
 
         {{-- ============ STEP: role ============ --}}
         <section data-step="role" class="hidden">
-            <h1 tabindex="-1" class="font-display text-3xl font-bold text-bay outline-none sm:text-4xl">What brings you to RentStreet?</h1>
+            <h1 tabindex="-1" class="font-display text-3xl font-bold text-bay outline-none sm:text-4xl">What brings you to RenTahanan?</h1>
             <p class="mt-2 text-base text-muted">Pick the one that fits. This sets up the right account for you.</p>
 
             <div data-field="role" class="mt-8">
@@ -511,12 +511,12 @@
 
         // Role / renter type: mouse or touch selection moves on automatically.
         // Keyboard users (detail === 0) press Continue instead.
-        form.addEventListener('click', function (e) {
-            var t = e.target;
-            if (t.matches && t.matches('input[name="role"], input[name="renter_type"]') && e.detail > 0) {
-                setTimeout(next, 180);
-            }
-        });
+        // form.addEventListener('click', function (e) {
+        //     var t = e.target;
+        //     if (t.matches && t.matches('input[name="role"], input[name="renter_type"]') && e.detail > 0) {
+        //         setTimeout(next, 180);
+        //     }
+        // });
         form.querySelectorAll('input[name="role"]').forEach(function (r) {
             r.addEventListener('change', function () { render(); });
         });

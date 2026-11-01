@@ -15,9 +15,13 @@
     <x-side-link :href="route('renter.applications')" :active="request()->routeIs('renter.applications')" icon="file">
         My applications
     </x-side-link>
+    <x-side-link :href="route('renter.tenancies')" :active="request()->routeIs('renter.tenancies')" icon="file">
+        My tenancies
+    </x-side-link>
     <x-side-link :href="route('renter.trust')" :active="request()->routeIs('renter.trust')" icon="shield">
         Trust score
     </x-side-link>
+
     <x-side-link :href="route('renter.profile')" :active="request()->routeIs('renter.profile')" icon="user-circle">
         Profile
     </x-side-link>

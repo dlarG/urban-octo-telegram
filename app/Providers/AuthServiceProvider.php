@@ -17,6 +17,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\Room::class               => \App\Policies\RoomPolicy::class,
         \App\Models\RentalApplication::class  => \App\Policies\RentalApplicationPolicy::class,
         \App\Models\Tenancy::class            => \App\Policies\TenancyPolicy::class,
+        \App\Models\Review::class             => \App\Policies\ReviewPolicy::class,
     ];
 
     /**

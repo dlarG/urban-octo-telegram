@@ -56,14 +56,22 @@ class ApplicationService
             throw new \DomainException('You already have an active application for this room.');
         }
 
+        
+
         return DB::transaction(function () use ($renter, $room, $message) {
-            return RentalApplication::create([
+            $application = RentalApplication::create([
                 'renter_id' => $renter->id,
                 'room_id'   => $room->id,
                 'status'    => ApplicationStatus::Submitted,
                 'message'   => $message,
             ]);
+            $application->room->boardingHouse->landlord->notify(
+                new \App\Notifications\NewApplicationReceived($application)
+            );
+
+            return $application;
         });
+
     }
 
     public function withdraw(RentalApplication $application, User $renter): RentalApplication

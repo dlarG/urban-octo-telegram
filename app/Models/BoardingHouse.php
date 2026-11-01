@@ -62,6 +62,11 @@ class BoardingHouse extends Model
     {
         return $this->belongsToMany(Amenity::class, 'boarding_house_amenities')->withTimestamps();
     }
+    public function getAverageRatingAttribute(): ?float
+    {
+        $avg = $this->reviews()->avg('rating');
+        return $avg !== null ? round((float) $avg, 1) : null;
+    }
     public function getPriceRangeAttribute(): ?array
     {
         $min = $this->rooms_min_base_price_monthly ?? null;
